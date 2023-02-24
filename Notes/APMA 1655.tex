@@ -1,0 +1,546 @@
+\documentclass[12pt]{article} 
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage{graphicx} 
+\usepackage{parskip}
+\usepackage{booktabs}
+\usepackage{array} 
+\usepackage{paralist} 
+\usepackage{verbatim}
+\usepackage{subfig}
+\usepackage{fancyhdr}
+\usepackage{sectsty}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt} 
+\lhead{}\chead{}\rhead{}
+\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\allsectionsfont{\sffamily\mdseries\upshape} 
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} 
+\usepackage[titles,subfigure]{tocloft}
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} %
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{empheq}
+
+\newcommand{\ans}[1]{\boxed{\text{#1}}}
+\renewcommand{\P}{\mathbb{P}}
+
+\title{Honors Statistical Inference I - APMA 1655}
+\author{Milan Capoor}
+\date{Spring 2023}
+
+\begin{document}
+\maketitle
+\section{Lecture 1, Jan 25: Random outcomes \& sample spaces}
+Features of random events:
+\begin{itemize}
+    \item There is more than one possible outcome.
+    \item Before doing or observing the experiment of interest, you do not know which outcome you will see. \item Some possible outcomes are likely, and some other outcomes are quite unlikely e.g., winning one billion dollars by buying a lottery ticket.
+\end{itemize}
+
+\subsection*{Sample Spaces}
+\emph{Sample space:} the set of all possible outcomes or results of that experiment (usually denoted $\Omega$)
+Examples:
+\begin{itemize}
+    \item Coin toss ($\Omega = \{H, T\}$)
+    \item Schrodinger's cat ($\Omega = \{\text{alive}, \text{dead}\}$)
+    \item The lifespan of a tree ($\Omega = \{1, 2, ... 100, ...\} = \mathbb{Z}_+$)
+\end{itemize}
+
+Also note that not all elements/subsets of $\Omega$ are equally likely - hence, "probability"
+
+\section{Lecture 2, Jan 27: Events, event operations, and infinite operations}
+Suppose $\Omega$ is a sample space. Then:
+\begin{itemize}
+    \item \emph{Event:} each subset E of $\Omega$
+    \item \emph{Impossible event:} the empty set $\emptyset$
+\end{itemize}
+
+Example: Final exam scores
+\begin{enumerate}
+    \item The sample space: $\Omega = \{0, 1, 2, ..., 100\}$
+    \item The event "score is higher than 50": $E = \{51, 52, ..., 100\} \subset \Omega$
+    \item The event "score is a negative number": $\emptyset$ 
+\end{enumerate}
+
+\subsection*{Set/Event Operations}
+Suppose $\Omega$ is a sample space and A and B are events $\{\omega \in \Omega : \omega \in A \text{ and } \omega \in B\}$:
+\begin{itemize}
+    \item \emph{Intersection:} both A and B occur; the collection of elements that are in sets A AND B 
+    \[A \cap B \]
+    \item \emph{Union:} either A or B occurs; the collection of elements in A or B
+    \[A \cup  B\]
+    \item \emph{Complement:} the collection of elements that are not in A; the opposite event of A 
+    \[A^c\]
+\end{itemize}
+Note that 
+\begin{align*}
+    \Omega^c &= \emptyset\\
+    \emptyset^c &= \Omega
+\end{align*}
+\begin{center}
+    \includegraphics*[width=0.6\textwidth]{Images/set operations.png}
+\end{center}
+
+\emph{De Morgan's Laws:} for any two events A and B we have the following
+\begin{align}
+    (A \cup B)^c &= A^c \cap B^c\\
+    (A \cap B)^c &= A^c \cup B^c
+\end{align}
+
+\subsection*{Infinite Sets}
+Suppose $A_1, A_2, A_3, ... A_n, A_{n + 1}, ...$ are events. Some of them may be identical and some of them may be empty
+
+Infinite Operations:
+\begin{itemize}
+    \item \emph{Infinite intersection:} the collection of events that are in ALL the sets $A_1, ..., A_n$; i.e. "all the events $A_n$ for $n = 1, 2, ...$ happen"
+    \[\bigcap_{n=1}^\infty A_n = \{\omega \in \Omega : \omega \in A_n \forall n = 1, 2, 3, ...\}\]
+    
+    \item \emph{Infinite union:} the collection of elements in at least one of the sets; "at least one of these events happen"
+    \[\bigcup_{n=1}^\infty A_n = \{\omega \in \Omega : \exists n' | \omega \in A_{n'}\}\]
+    ("there exists at least one n' such that omega is in the set)
+\end{itemize}
+\section{Lecture 3, Jan 30: Probability space \& properties of probability}
+\emph{Disjoint:} for two events A and B, they are disjoint if $A \cap B = \emptyset$
+
+\emph{Mutually disjoint:} if all pairwise intersections of $A_1, A_2, ..., A_n$ are empty ($A_n \cup A_m = \emptyset \text{ if } n \neq m$)
+
+\emph{Definition of Probability:} from the following definition we can derive everything in probability theory.
+
+Let $\Omega$ be a sample space. Suppose $\mathbb{P}$ is a real-valued function of subsets of $\Omega$
+\[\mathbb{P} : \{\text{subsets of } \Omega\} \to \mathbb{R}, \quad A \mapsto \mathbb{P}\{A\}\]
+where A is an input and $\P{A}$ is the corresponding output. If $\P$ satisfies the following three axioms, the pair $(\Omega, \P)$ is a \emph{probability space}
+\begin{enumerate}
+    \item $\P(A) \geq 0$ for any subset $A \subset \Omega$ (the probability of an event must be non-negative)
+    \item $\P(\Omega) = 1$
+    \item For any sequence of disjoint subsets $\{A_i\}_{i = 1}^\infty$ (i.e. $A_i \cap A_j) = \emptyset$ we have 
+    \[\P\{\bigcup_{i=1}^\infty A_i\} = \sum_{i =1}^\infty \P(A_i)\]
+\end{enumerate}
+
+The map $\P$ is called a \emph{probability}
+
+We can define this as a specific function
+\[\P(A) := \frac{\#A}{n} \quad A \subset \Omega\]
+where \#A is the number of elements in A and $\Omega = \{1, 2, ..., n\}$ with a large n. 
+
+\section*{Lecture 4, Feb 1: Properties of Probability}
+Let $(\Omega, \P)$ be a probability space. Then,
+\begin{enumerate}
+    \item $\P(\emptyset) = 0$ 
+    
+    Note: while this implies that the probability of an impossible even is 0, there can be zero-probability events which are not themselves impossible
+    \item if two events $E_1$ and $E_2$ satisfy $E_1 \cap E_2 = \emptyset$, then 
+    \[\P(E_1 \cup E_2) = \P(E_1) + \P(E_2)\]
+
+    \item if $A, B \subset \Omega$ and $A \subset B$, then $\P(A) \leq \P(B)$
+    
+    (Intuitively, if A happens, B must also happen so B is more likely)
+    \item $0 \leq \P(A) \leq 1$ for $A \subset \Omega$
+    \item $\P(A^c) = 1 - \P(A)$
+    \item for any $A, B \subset \Omega$
+    \[\P\{A \cup B\} = \P\{A\} + \P\{B\} - \P\{A \cap B\}\]
+    \item for any countable collection of subsets
+    \[\P\{\bigcup_{n=1}^\infty A_n \} \leq \sum_{n=1}^\infty \P\{A_n\}\]
+
+    Note: the equality is obvious from axiom three in the case where all events are mutually disjoint. in the case of intersections, though, rule 6 must be generalized to account for overlap, hence the less than or equal to 
+\end{enumerate}
+
+\section{Lecture 5, Feb 3: Conditional Probability}
+\subsection*{Part I - Motivating Problem} 
+We know that a family has two children. 
+\begin{align*}
+    \Omega &= \{(g, g), (b, b), (g, b), (b, g)\}\\
+    \P(A) &= \frac{\#A}{\#\Omega} = \frac{\#A}{4}\quad A \subset \Omega
+\end{align*}
+
+Event 1: $A = \{(g, g), (b, g), (g, b)\}$ ("at least one is girl") 
+\[\P(A) = \frac{3}{4}\]
+
+Now suppose we get further information that the family has at least one boy: 
+
+$B = \{(b, g), (b, b), (g, b)\}$:
+
+
+\[\P(A | B) = \frac{\#(A \cap B)}{\# B} = \frac{\#\{(b, g), (g, b)\}}{\#\{(b, g), (b, b), (g, b)\}}  = \frac{\P(A \cap B)}{\P(B)} = \frac{1}{2}\]
+("knowing that event B occurs, what is the updated likelihood of A?")
+
+\subsection*{Part II - A more rigorous definition}
+Let $A, B \subset \Omega$ such that 
+\begin{enumerate}
+    \item if $\P(B) > 0$ we call the following "the \emph{conditional probability of A given B}"
+    \[\P(A | B) = \frac{\P(A \cap B)}{\P(B)}\]
+    \item otherwise, if $\P(B) = 0$ then $\P(A | B)$ is not well defined in the scope of this course (see real analysis) 
+\end{enumerate}
+
+\textbf{Theorem:} Let $(\Omega, \P)$ be a probability space. Suppose $B \subset \Omega$ and $\P(B) > 0$. Then let
+\[\tilde{\P}(A) := \P(A | B) \quad \forall A \subset \Omega\]
+Then, $\tilde{\P}$ is another probability defined on $\Omega$ such that $\tilde{\P}$ also satisfies the 3 axioms 
+
+\subsection*{Part III - Properties of Conditional Probabilities}
+Assuming $\P(B) > 0$, and $A, B \subset \Omega$:
+\begin{enumerate}
+    \item Multiplication Law
+    \[\P(A \cap B) = \P(A | B) \cdot \P(B)\]
+    
+    \item Let $B_1, B_2, ..., B_n \subset \Omega$. We say the events provide a \emph{partition} of $\Omega$ if they are mutually disjoint and they satisfy\footnote{Note that for $B_i = \{B_1, ... B_n\}$, \[A \cap \left(\bigcup_{i=1}^n B_i\right) = A \cap (B_1 \cup B_2 \cup ... \cup B_n) = \bigcup_{i = 1}^n A \cap B_i\]} 
+    \[\bigcup_{i=1}^n B_i = \Omega\] 
+
+    \item \emph{The law of total probability }
+    
+    Let $B_1, B_2, ..., B_n$ be events and they provide a partition of $\Omega$ and $\P(B_i) > 0$. Then, 
+    \[\P(A) = \sum_{i=1}^n \P(A | B_i) \cdot \P(B_i)\]
+
+    \textbf{Proof:} 
+    \[\Omega = \bigcup_{i=1}^n B_o \implies A = A \cap \Omega\]
+    Then, by the laws above, $A \cap B_1, A \cap B_2, ... A \cap B_n$ is mutually disjoint. So 
+    \[\P(A) = \P(\bigcup_{i = 1}^n A \cap B_i) = \sum_{i = 1}^n \P(A \cap B_i)\]
+    Then from the multiplication law, $\P(A) = \sum_{i=1}^n \P(A | B_i) \cdot \P(B_i)$ and the desired result follows
+
+    \item Corollary: Let B be an event with $0 < \P(B) < 1$. Then we have 
+    \[\P(A) = \P(A | B) \cdot \P(B) + \P(A | B^c) \cdot \P(B^c)\]
+
+    \textbf{Proof:}
+    Let $B_1 = B, \; B_2 = B^c, \; n = 2$. $B_1$ and $B_2$ obviously partition $\Omega$ and 
+    \[P(B_1) = \P(B) > 0, \quad \P(B_2) = \P(B^c) = 1 -\P(B) > 0\]
+    Then the corollary follows from the law of total probability 
+
+\end{enumerate}
+
+\section{Lecture 6, Feb 6: Bayes' formula}
+\subsection*{Part I - Bayes' Rule}
+Suppose $B_1, ..., B_n$ provide a partition of $\Omega$. In addition, $\P(B_i) > 0 \quad \forall i \in [1, n]$. Let A be any event such that $\P(A) > 0$. Then, 
+\[\P(B_i | A) = \frac{\P(A | B_i) \cdot \P(B_i)}{\sum_{j=1}^n \P(A | B_j) \cdot \P(B_j)} \quad i = 1, 2, ..., n\]
+
+\textbf{Proof:} 
+The definition of conditional probability implies 
+\[\P(B_i | A) = \frac{\P(A \cap B_i)}{\P(A)}\]
+The multiplication law implies 
+\[\P(A \cap B_i) = \P(A | B_i) \cdot \P(B_i)\]
+The law of total probability implies 
+\[\P(A) = \sum_{i=1}^n \P(A | B_i) \cdot \P(B_i)\]
+Then the desired result follows. 
+
+Though this proof is trivial, the formula is quite meaningful in that it allows an exchange between the conditions and results. Note that this is not the general Bayes formula. 
+
+\section{Lecture 7, Feb 8: Independence}
+Independent events do not affect each other's outcomes (e.g. flipping two coins).That is 
+\[\begin{cases}
+    \P(A | B) = \P(A)\\
+    \P(B | A) = \P(B)
+\end{cases}\]
+
+In other words, knowing A does not help predict B.
+
+Together with those equations and the multiplication law, we have 
+\[\P(A \cap B) = \P(A) \cdot \P(B)\]
+(for independent events)
+
+\textbf{Definition:}
+Let $(\Omega, \P)$ be a probability space. 
+\begin{enumerate}
+    \item Suppose A and B are two events. They are \emph{independent} if \[\P(A \cap B) = \P(A) \cdot \P(B)\]
+    \item Suppose $A_1, A_2, ... A_n$ are a sequence of events. The sequence is \emph{mutually independent} if 
+    \[\P(A_m \cap A_n) = \P(A_m) \cdot \P(A_n) \quad m \neq n\]
+\end{enumerate}
+
+\textbf{Theorem:} Let $(\Omega, \P)$ be a probability space with $A, B \subset \Omega$ such that $\P(A) > 0$ and $\P(B) > 0$ (this is necessary to have the conditional probabilities well-defined). Then the following three equations are equivalent:
+\begin{enumerate}
+    \item $\P(A | B) = \P(A)$
+    \item $\P(B | A) = \P(B)$
+    \item $\P(A \cap B) = \P(A) \cdot \P(B)$
+\end{enumerate}
+Note that we choose this third equation to be the definition of independence stated above specifically because it does not defend on the positive probability condition of the other two
+
+\textbf{Example:} Suppose a family has 3 children of unknown gender 
+\[\Omega = \{(g, g, g), (g, g, b), (g, b, g), (b, g, g), (g, b, b), (b, g, b), (b, b, g), (b, b, b)\}\]
+\[\#\Omega = 2^3 = 8 \Longrightarrow \P(A) := \frac{\#A}{8}\]
+
+Consider the events A ("the family has boys and girls") and B ("the family has at most one girl")
+
+Question: Are A and B independent?
+\begin{align*}
+    \P(A) &= \frac{6}{8}\\
+    \P(B) &= \frac{4}{8}\\
+    \P(A) \cdot \P(B) &= \frac{3}{8}\\
+    \P(A \cap B) &= \frac{3}{8} = \P(A) \cdot \P(B) 
+\end{align*}
+So the events are independent 
+
+\section{Lecture 8, Feb 10: Random Variable}
+Probability theory has 3 building blocks:
+\begin{enumerate}
+    \item Sample space ($\Omega$)
+    \item Probability ($\P$)
+    Together, these two give us probability space $(\Omega, \P)$
+    \item Random Variable
+\end{enumerate}
+
+\textbf{Motivating Example:}
+Let $\Omega$ be the collection of all undergraduate students at Brown. Then $\P(A) := \frac{\#A}{\#\Omega}$. 
+And, for each student $\omega \in \Omega$, 
+\[X(\omega) = \text{the SAT score of the given student} \quad \{X: \Omega \to \mathbb{R},\; \omega \mapsto X(\omega)\}\]
+but where $\omega$ is unknown (say to protect anonymity) so it can be any value in $\Omega$. 
+Note, however, that if $\omega$ is unknown, then $X$ is also uncertain.
+
+\textbf{Definition:}
+Let $(\Omega, \P)$ be a probability space. Suppose $X$ is a real-valued function defined on $\Omega$, 
+\begin{align*}
+    X: \; &\Omega \to \mathbb{R}\\
+    &\omega \mapsto X(\omega)
+\end{align*}
+We thus call X a \emph{random variable}
+
+\section{Cumulative Distribution Functions}
+\textbf{Motivating Example:} $\Omega$ is all the undergrads at Brown, $\omega \in \Omega$ is a student at Brown, $X(\omega)$ is a random variable denoting the SAT score of a Brown student 
+
+Let $A_{100}$ be the event "the SAT score of a Brown student is $\leq 100$. Then, 
+\[A_{100} = \{\omega \in \Omega : X(\omega) \leq 100\}\]
+
+\textbf{Definition:} Let $(\Omega, \P)$ be a probability space and X be a random event. Then for any real number $X \in \mathbb{R}$, we define the event $A_x$ by 
+\[A_x = \{\omega \in \Omega : X(\omega \leq x)\}\]
+We define a real-valued function F on $\mathbb{R}$ by 
+\[F(x) := \P(A_x) = \P(\{\omega \in \Omega : X(\omega) \leq x\})\]
+This function F is the \emph{cumulative distribution function (CDF)} of the random variable X, usually written $F_X$
+
+\section{Lecture 9, Feb 13: Cumulative distribution function}
+\subsection*{Part I  - Review}
+A random variable $X$ is a function defined on a sample space $\Omega$
+
+For each real number x, we define an event 
+\[A_x = \{\omega \in \Omega : X(\omega) \leq x\}\]
+
+We then define a function by 
+\[F_X : \begin{array}{c}
+    \mathbb{R} \to [0, 1]\\
+    x \mapsto \P(A_x)
+\end{array}\]
+Note that $F_X = \P(X \leq x)$ and this function is called \emph{the cumulative distribution function}
+
+\subsection*{Part II - The CDF}
+\textbf{Example 1:} Flipping a coin 
+\begin{itemize}
+    \item $\Omega = \{H, T\}$
+    \item $\P(A) := \frac{\#A}{\#\Omega} = \frac{\#A}{2} \quad (A \subset \Omega)$
+    \item \[\begin{cases}
+        X(H) = 1\\
+        X(T) = 0
+    \end{cases}\] 
+\end{itemize}
+
+\emph{Claim:} the CDF of X is 
+\[F_X(x) = \begin{cases*}
+    0 \quad x < 0\\
+    \frac{1}{2} \quad 0 \leq x < 1\\
+    1 \quad x \geq 1
+\end{cases*}\]
+
+\emph{Proof:}
+\begin{enumerate}
+    \item When $x < 0$, then 
+    \[A_x = \{\omega \in \Omega : X(\omega) \leq x\} = \emptyset\] 
+    (this is impossible because X is only 0 or 1 so not negative). So $F_X(x) = \P(A_x) = 0$
+    \item When $0 \leq x < 1$, 
+    \[A_x = \{\omega \in \Omega : X(\omega) \leq x\} = \{\omega \in \Omega : X(\omega) = 0\} = \{T\}\] 
+    so $F_X(x) = \P(\{T\}) = \frac{1}{2}$
+    \item When $x \geq 1$
+    \[A_x = \{\omega \in \Omega : X(\omega) \leq x\} = \{\omega \in \Omega : X(\omega) \leq 1\} = \{T, H\}\]
+    so $P(A_x) = 1$
+\end{enumerate}
+
+\textbf{Example 2:} Flipping a biased coin 
+\begin{itemize}
+    \item $\Omega = \{H, T\}$
+    \item \[\P(A) := \begin{cases*}
+        p \quad A = \{H\}\\
+        1 - p \quad A = \{T\}
+    \end{cases*}\]
+    for some $p \in [0, 1]$
+    \item $X(H) = 1, X(T) = 0$
+\end{itemize}
+\emph{Claim:} the CDF here is 
+\[F_X(x) = \begin{cases}
+    0 \quad x < 0\\
+    1 - p \quad 0 \leq x < 1\\
+    1 \quad x \geq 1
+\end{cases}\]
+\emph{Proof:} same as above 
+
+Note: this example actually refers to the Bernoulli Distribution
+\textbf{Definition:}
+Let X be a random variable on $(\Omega, \P)$ If the CDF of X is 
+\[F_X(x) = \begin{cases}
+    0 \quad x < 0\\
+    1 - p \quad 0 \leq x < 1\\
+    1 \quad x \geq 1
+\end{cases}\]
+for some $o \in [0, 1]$, we say "X follows the Bernoulli Distribution with success probability p" and denote $X \sim \text{Bernoulli}(p)$
+
+\textbf{Theorem:} Let $(\Omega, \P)$ be a probability space. Suppose X is a random variable defined on $\Omega$ and its CDF is $F_X$
+
+$F_X$ is non-decreasing ($F_X(x_1) \leq F_X(x_2) \quad x_1 \leq x_2$) for any CDF.
+
+\textbf{Proof:} 
+\[A_{x_1} = \{\omega \in \Omega : X(\omega) \leq x_1\}\]
+\[A_{x_2} = \{\omega \in \Omega : X(\omega) \leq x_2\}\]
+\[x_1 \leq x_1 \implies Ax_1 \subset Ax_2\]
+\[F_X(x_1) = \P(A_{x_1}) \leq \P(A_{x_2}) \leq F_X(x_2)\]
+
+\section*{Lecture 10, Feb 15: }
+\subsection*{Part I - Review}
+Let X be a random variable defined on a probability space $(\Omega, \P)$.
+For any real number x, 
+\[A_x = \{\omega \in \Omega : X(\omega) \leq x\}\]
+Then the cumulative distribution function of X is
+\[F_X(x) = \P(A_x)\]
+
+\subsection*{Part II - Properties of the CDF}
+Let X be any random variable on any probability space $(\Omega, \P)$ with $F_X(x)$ as the corresponding CDF
+
+\begin{enumerate}
+    \item Any CDF is non-decreasing $(F_X(x_1) \leq F_X(x_2) \quad x_1 \leq x_2)$
+    \item \[\lim_{x \to -\infty} F_X(x) = 0\]
+    \item \[\lim_{x \to \infty} F_X(x) = 1\]
+    (Note the rigorous proof is needs real analysis)
+    \item $F_X$ is right-continuous, i.e. \[\forall x_0 \in \mathbb{R},\quad F_X(x_0) = \lim_{x \to x_0^+} F_X(x)\]
+
+    Note that the "right-continuous" property is implied from the $\leq$ sign. With a strict less-than inequality, the CDF becomes left-continuous
+
+    \item For any $x_0 \in \mathbb{R}$, 
+    \[\P(\{\omega \in \Omega : X(\omega) = x_0\}) = F_X(x_0) - \lim_{x \to x_0^-} F_X(x)\]
+    Note that this is zero if the CDF is continuous
+\end{enumerate}
+
+\section*{Lecture 11, Feb 17}
+\subsection*{Part I - Review}
+The building blocks of probability together define the CDF:
+\[\begin{cases}
+    \Omega\\
+    \P\\
+    X
+\end{cases} \Longrightarrow F_X(x) = \P(\{\omega \in \Omega : X(\omega) \leq x\})\]
+
+\subsection*{Part II - Moving backwards}
+\textbf{Question:} Given a function F (satisfying some conditions), do there exist a sample space, a probability, and a random variable corresponding to the given F? 
+
+\textbf{Theorem:} 
+Suppose we have a $F : \mathbb{R} \to [0, 1]$ satisfying 
+\begin{itemize}
+    \item F is non-decreasing
+    \item With end behavior 
+    \[\lim_{x \to -\infty} F(x) = 0, \quad \lim_{x \to \infty} F(x) = 1\]
+    \item F is right-continuous
+\end{itemize}
+Then, there exist a sample space, a probability, and a random variable such that 
+\[F(x) =\P(\{\omega \in \Omega : X(\omega) \leq x\})\]
+
+\textbf{Proof:} far beyond the scope of this course 
+
+\subsection*{Part III - Classification of Random Variables}
+Types of random variables:
+\begin{itemize}
+    \item Continuous
+    \item Discrete
+    \item Neither continuous nor discrete
+\end{itemize}
+
+\textbf{Definition:} a function F is continuous if 
+\[\lim_{x \to x_0^-} F(x) = \lim_{x \to x_0^+} F(x) = F(x_0) \quad \forall\, x_0\]
+
+\textbf{Definition:} a random variable X is a continuous random variable if the CDF $F_X : \mathbb{R} \to [0, 1]$ is a continuous function 
+
+\textbf{Theorem:} Let X be a random variable on $(\Omega, \P)$. If X is a continuous random variable, 
+\[\P(\{\omega \in \Omega : X(\omega) = x_0\}) = 0 \quad \forall \, x_0 \in \mathbb{R}\]
+
+\textbf{Proof:} 
+\[\P(\{\omega \in \Omega : X(\omega) = x_0\}) = F_X(x_0) - \lim_{x \to x_0^-} F_X(x) = F_X(x_0) - F_X(x_0) = 0\]
+
+
+\section*{Lecture 12, Feb 22: Continuous Random Variables}
+\subsection*{Part I - A ``theorem"}
+\textbf{``Theorem":} Let $F_X$ be the CDF of a continuous random variable X. Then, $F_X$ is differentiable. 
+
+\textbf{Remark:} the true and rigorous version of this "theorem" requires lots of pure math so this version does have some edge cases such that "differentiable" really means "piecewise differentiable"
+
+\emph{Example:}
+\[F(x) = \begin{cases}
+    0 \quad x < 0\\
+    x \quad 0 \leq x < 1\\
+    1 \quad x \geq 1
+\end{cases}\]
+This is not technically differentiable because of the sharp points at $x =\{0, 1\}$ but we can use a generalized derivative to cheat: 
+\[F'(x) = \begin{cases}
+    0 \quad x < 0\; \text{or}\; x > 1\\
+    1 \quad 0 < x < 1\\
+    k \quad x = 0 \; \text{or} \; x = 1
+\end{cases}\]
+where k is any value whatsoever. 
+
+\textbf{Definition:} Let $F_X$ be the CDF of a continuous random variable X. 
+\[p_X(x) = F_X'(x)\]
+We call $p_X(x)$ the \emph{probability density function (PDF)} of the random variable X
+
+\subsection*{Part II - The Rigorous Treatment (optional)}
+\textbf{Definition:} X is a continuous random variable if $F_X$ is  absolutely continuous
+
+\textbf{Theorem:} X is a continuous random variable. Then its CDF $F_X$ is differentiable ``almost everywhere with respect to the Lebesgue measure''
+
+\textbf{Definition:} $p_X(x) = F_X'(x)$ is the probability density function for a continuous random variable X
+
+\subsection*{Part III - The Probability Density Function}
+Less rigorously, 
+\[p_X(x) = F_X'(x)\]
+is the probability density function and is the piecewise derivative of $F_X$ for the continuous random variable X
+
+\textbf{Theorem:} Let X be a continuous RV with CDF $F_X(x)$ and PDF $p_X(x)$. Then,
+\[F_X(x) = \int_{-\infty}^x p_X(t) \; dt\]
+
+\textbf{Remarks:}
+\begin{itemize}
+    \item $p_X(x) := F_X'(x)$ so CDF determines PDF
+    \item $F_X(x) = \int_{-\infty}^\infty p_X(t)\; dt$ so PDF determines CDF
+\end{itemize}
+
+\subsection*{Part IV - Examples of continuous random variables}
+\textbf{Definition:} Let X be a RV. If the CDF od X is 
+\[F_X(x) = \begin{cases}
+    0 \quad x < a\\
+    \frac{x-a}{x- b} \quad a \leq x \leq b\\
+    1 \quad x > b
+\end{cases}\] 
+(for $a < b$), then X follows the uniform distribution between a and b.
+
+This is continuous so we can take the piecewise derivative as follows:
+\[p_X(x) = \begin{cases}
+    0 \quad x < a \text{ or } x > b\\
+    \frac{1}{b - a} \quad a \leq x \leq b
+\end{cases}\]
+Notice that the graph of this function is a rectangle with base $b-a$ and height $1/(b-a)$.
+
+\textbf{Experiment:} Randomly select a number between 0 and 1
+\begin{itemize}
+    \item $\Omega = (0, 1)$
+    \item $X : \Omega \to \mathbb{R}, \quad X(\omega) = \omega, \quad \omega \in \Omega = (0, 1)$
+    \item Because we randomly select numbers, we assume $X \sim \text{Unif}(0, 1)$
+    \item Let $E = \{0.5\} = \{\omega \in \Omega: X(\omega) = 0.5\} = \emptyset$ be the event ``the selected number is exactly 0.5''
+\end{itemize}
+So, 
+\[\P(E) = \P(X = 0.5) = F_X(0.5) - \lim_{x \to 0.5^-} F_X(x) = 0\]
+because $F_X$ is continuous so the limit is equal to the value
+
+\section*{Lecture 13, Feb 24: }
+\subsection*{Part I - Review} 
+\begin{itemize}
+    \item X is a continuous random variable iff $F_X$ is a continuous function 
+    \item $p_X(x) = F_X'(x)$ is the ``probability density function" of X 
+    \item 
+\end{itemize}
+\end{document}
+
