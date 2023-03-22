@@ -32,7 +32,10 @@
 
 \newcommand{\ans}[1]{\boxed{\text{#1}}}
 \renewcommand{\P}{\mathbb{P}}
-
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\qed}{\quad \blacksquare}
+\newcommand{\brak}[1]{\langle #1 \rangle}
+\newcommand{\E}{\mathbb{E}}
 \title{Honors Statistical Inference I - APMA 1655}
 \author{Milan Capoor}
 \date{Spring 2023}
@@ -540,7 +543,603 @@ because $F_X$ is continuous so the limit is equal to the value
 \begin{itemize}
     \item X is a continuous random variable iff $F_X$ is a continuous function 
     \item $p_X(x) = F_X'(x)$ is the ``probability density function" of X 
-    \item 
+    \item The following are the graphs of the PDF and CDF of the random variable $X \sim \text{Unif}(a, b)\quad a < b$
+    
+    \includegraphics[width=\textwidth]{Images/graphs.png}
+
+    \item ``Impossible'' implies ``zero probability'' but zero probability does not imply impossible
 \end{itemize}
+
+\subsection*{Part II - The Probability Density Function}
+\textbf{Theorem:} Let X be a continuous random variable and its PDF is $P_X(x)$. Then
+\[\int_{-\infty}^\infty p_X(t) \; dt = 1\]
+
+\textbf{Proof:}
+\begin{align*}
+    \int_{-\infty}^\infty p_X(t) \; dt = \lim_{x \to +\infty} \int_{-\infty}^x p_X(t)\; dt\\
+    = \lim_{x \to +\infty} F_X(x) = 1 \quad \blacksquare
+\end{align*}
+
+\textbf{Interlude:} Applications of the above law 
+\begin{itemize}
+    \item Bayesian statistics
+    \[f(\theta | x) = \frac{f(x, \theta)}{\int_{-\infty}^\infty} f(x, \theta) \; d\theta\]
+    \item Quantum mechanics
+    For each fixed t, $|\psi(x, t)|^2$ is the PDF of x so 
+    \[\int_{-\infty}^\infty |\psi(x, t)|^2 \; dx = 1\]
+    which is the ``normalization condition od the Schrodinger equation''
+\end{itemize}
+
+\subsection*{Part III - Normal Distributions}
+\textbf{Definition:} Let X be a RV. We say ``X follows the normal distribution with mean $\mu$ and variance $\sigma^2$'' (denoted $X \sim N(\mu, \sigma^2)$), if 
+\[F_X(x) = \int_{-\infty}^x \frac{1}{\sigma \sqrt{2\pi}} \cdot e^{-\frac{(t - \mu)^2}{2\sigma^2}}\]
+additionally, 
+\[p_X(x) = F_X'(x) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{(t - \mu)^2}{2\sigma^2}}\]
+
+\section*{Lecture 14, Feb 27: Discrete Random Variables}
+\subsection*{Part I - Preparation}
+\textbf{Definition:} Let A be a subset of $\R$. Then the \emph{indicator function of A} is 
+\[\mathbf{1}_A(x) = \begin{cases}
+    1 \quad x \in A\\
+    0 \quad x \notin A
+\end{cases}\]
+
+\textbf{Example 1:}
+If $A = [0, +\infty)$, then 
+\[\mathbf{1}_A(x) = \mathbf{1}_{[0, +\infty)}(x) = \begin{cases}
+    1 \quad x \geq 0\\
+    0 \quad x < 0
+\end{cases}\] 
+
+\textbf{Example 2:}
+If $A = [\sqrt{2}, +\infty)$, then 
+\[\mathbf{1}_A(x) = \mathbf{1}_{[\sqrt{2}, +\infty)}(x) = \mathbb{1}_{[0, +\infty)}(x-\sqrt{2}) = \begin{cases}
+    1 \quad x \geq \sqrt{2}\\
+    0 \quad x <\sqrt{2}0
+\end{cases}\] 
+
+Also note that for $X \sim \text{Bernoulli}(\frac{1}{2})$, 
+\begin{align*}
+    F_X(x) &= \begin{cases}
+        0 \quad x < 0\\
+        \frac{1}{2} \quad 0 \leq x < 1\\
+        1 \quad x \geq 1
+    \end{cases} \\
+    &= \frac{1}{2}\mathbf{1}_{[0, +\infty)}(x) + \mathbf{1}_{[1, +\infty)}(x) \\
+    &= \P(X = 0) + \P(X = 1)
+\end{align*}
+Remember that the random variable X that conforms to the bernoulli distribution can only take 2 values which thus map to the two left endpoints 0 and 1 of the indicator functions.
+
+More generally, say $X$ takes values in $\{x_k\}_{k=1}^K = \{x_1, x_2, ..., x_K\}$ so the CDF can also be written 
+\[F_X(x) = \sum_{k=1}^K \P(X = x_k) \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+Heuristically, this is the sum of probabilities at each point $x_k$
+
+\section*{Lecture 15, March 1: Discrete Random Variable Definition}
+\textbf{Definition:} Let X be a RV. X is a discrete random variable if its CDF can be written in the form 
+\[F_X(x) = \sum_{k_1}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+where $p_k \geq 0$ and $\sum_{k=1}^K p_k = 1$ as $p_k$ represents a probability. Also, $x_k$ is a real number, and $K$ is allowed to be $+\infty$.
+
+Finally, the ordered sequence $\{p_k\}_{k=1}^K$ is the \emph{probability mass function} of X and represents the probability of each endpoint event 
+
+Remark: that the sequence $\{p_k\}_{k=1}^K$ is referred to as a ``function'' is simply a convention as the PMF is the counterpoint to the CDF. It may also refer to any function 
+\[k \mapsto p_k, \quad k \in \mathbb{Z}\]
+
+\textbf{Example:} $X \sim \text{Bernoulli}(p)$
+\[F_X(x) = (1-p) \cdot \mathbf{1}_{[0, +\infty)}(x) + p\cdot \mathbf{1}_{[1, +\infty)}(x) \]
+
+\textbf{Remark:} From the CDF 
+\[F_X(x) = \sum_{k=1}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+we can derive the PMF $\{p_k\}_{k=1}^K$. And if we know $\{x_k\}_{k=1}^K$ we can go from PMF to CDF
+
+\textbf{Theorem:} Let X be a RV defined on $(\Omega, \P)$ and its CDF is 
+\[F_X(x) = \sum_{k=1}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+then we have 
+\[\P(\{\omega \in \Omega : X(\omega) = x_k\}) = p_k\]
+
+\textbf{Proof:} Omitted. The theorem is cheating. To make it true, make some topological assumptions such that $\{x_k\}_{k=1}^K$ as a subset of the real line is locally finite (or its derived set is $\emptyset$)
+
+\subsection*{Poisson Distribution ($X \sim \text{Pois}(\lambda)$)}
+``X follows the Poisson distribution with rate parameter $\lambda$'' if $K = \infty$, $x_k = k \quad \forall k \in [0, \infty)$, 
+\[p_k = \frac{\lambda^k e^{-\lambda}}{k!}\]
+where that quotient represents the probability that ``k events occur in a fixed time interval''
+
+Then,
+\begin{align*}
+    \sum_{k=0}^\infty p_k &= \sum_{k=0}^\infty \frac{\lambda^k e^{-\lambda}}{k!}\\
+    &= e^{-\lambda}\sum_{k=0}^\infty \frac{\lambda^k e^{-\lambda}}{k!}\\
+    &= e^{-\lambda} e^{\lambda} \quad \text{(taylor series for $e^x$)}\\
+    &= 1
+\end{align*}
+Note: the starting index must be 0 for the taylor series to work
+
+\section*{Random Variables that are neither continuous nor discrete}
+\subsection*{Part I - Preparation}
+Let Y and Z be random variables. They are independent if for \emph{any}subsets $A, B \subset \R$,
+\[\P(\{\omega \in \Omega : (Y(\omega) \in A) \cap (Z(\omega) \in B)\}) = \P(\{\omega \in \Omega : Y(\omega) \in A\}) \cdot  \P(\{\omega \in \Omega : Z(\omega) \in A\})\]
+
+\subsection*{Part II - Definition}
+\textbf{Example:} Let Y, Z be independent random variables such that 
+\[\begin{cases}
+    Y \sim \text{Bernoulli}(\frac{1}{2})\\
+    Z \sim N(0, 1)
+\end{cases}\] 
+Then let
+\[X(\omega) = Y(\omega) + (1 - Y(\omega))\cdot Z(\omega)\]
+
+Claim:
+\[F_X(x) = \frac{1}{2}\mathbf{1}_{[0, +\infty)}(x) + \frac{1}{2}F_N(x) = \frac{1}{2}\mathbf{1}_{[0, +\infty)}(x) + \frac{1}{2}\int_{-\infty}^x \frac{1}{\sqrt{2\pi}}e^{-\frac{t^2}{2}}\; dt \]
+Then the graph of $F_X$ is continuous for all x except at $x = 0$ where there is a jump discontinuity.
+
+Proof: 
+\[\begin{cases}
+    A_X = \{\omega \in \Omega: X(\omega \leq x)\}\\
+    B = \{\omega \in \Omega: Y(\omega) = 1\}
+\end{cases}\]
+Then by definition of CDF,
+\[F_X(x) = \P(A_x) = \P(A_X |B)\cdot \P(B) + \P(A_X|B^x)\cdot \P(B^c)\]
+(by law of total probability)
+
+\section*{Lecture March 3: Independence}
+\subsection*{Part I - Independence between two events (Review)}
+\textbf{Definition:} Let $(\Omega, \P)$ be a probability space. $\tilde{A}, \tilde{B} \subset \Omega$ are two events that are independent if 
+\[\P(\tilde{A} \cap \tilde{B}) = \P(\tilde{A}) \cdot \P(\tilde{B})\]
+
+\subsection*{Part II - Independence between two random variables}
+\textbf{Definition Version 1:} Let Y and Z be RVs defined on $(\Omega, \P)$. Y ans Z are independent if \emph{for any} subsets $A, B \subset \R$ we define events via Y and Z by 
+\begin{align*}
+    \tilde{A} &= \{\omega \in \Omega : Y(\omega) \in A\}\\
+    \tilde{B} &= \{\omega \in \Omega : Z(\omega) \in B\}
+\end{align*}
+where A and B are independent  
+
+\textbf{Definition Version 2:} Let Y and Z be random variables defined on $(\Omega, \P)$. Y and Z are independent if 
+\[\P((Y \in A) \cap (Z \in B)) = \P(Y \in A) \cdot \P(Z \in B)\]
+\emph{for any} $A, B \in R$
+
+Note that 
+\[\P((Y \in A) \cap (Z \in B)) = \P(\tilde{A} \cap \tilde{B})\] 
+showing that the two definitions are equivalent
+
+\subsection*{Part III - Examples}
+\textbf{Example 1 (Intuition):}
+\begin{align*}
+    Y &= \text{outcome of Michael flipping a coin}\\
+    Z &= \text{outcome of Taylor Swift flipping a coin}
+\end{align*}
+Obviously, these are independent.
+
+\textbf{Example 2 (with math):}
+
+Y and Z are two independent RVs defined on $(\Omega, \P)$. Let 
+\begin{align*}
+    Y &\sim \text{Bernoulli}(\frac{1}{2})\\
+    Z &\sim N(0, 1)\\
+    X(\omega) &:= Y(\omega) + (1 - Y(\omega))\cdot Z(\omega)
+\end{align*}
+Then for a fixed real number x, 
+\[\P((X \leq x) \cap (Y = 0)) = \P((Z \leq x) \cap (Y = 0))\]
+by definition of X and the fixed value of Y.
+The above is then equal to 
+\[\P((Y \in \{0\})\cap (Z \in (-\infty, x]))\]
+where if $A = \{0\}$ and $B = (-\infty, x]$, 
+\begin{align*}
+    &= \P(Y \in \{0\}) \cdot \P(Z \in (-\infty, x])\\
+    &= \P(Y = 0) \cdot \P(Z \leq x)\\
+    &=\frac{1}{2}F_Z(x)
+\end{align*}
+
+\section{Lecture March 6: Mean/Expected Value}
+\subsection*{Part I - Motivation}
+\textbf{Example 1:} Flip a fair coin 1000 times. For the i-th flip
+\[X_i = \begin{cases}
+    1 \quad \text{if Heads}\\
+    0 \quad \text{if Tails}
+\end{cases}\]
+Then intuitively, the average value (when the number of flips is large) will be 
+\[\bar{X}_{1000} = \frac{\sum_{i=0}^{1000} X_i}{1000} \approx \frac{1}{2}\]
+or 
+\[\lim_{n \to \infty} \bar{X}_n = \frac{1}{2}\]
+Then, in general,
+\[\bar{X}_n = \frac{X_1 + X_2  +... + X_n}{n} \approx \sum_{k=0}^K x_k \cdot p_k\]
+
+\textbf{Example 2:} Office hours are 2-4pm on Mondays. On the i-th Monday, $X_i$ students come. 
+This can be modelled as 
+\[X_i \sim \text{Pois}(\lambda)\]
+so 
+\[\bar{X}_n \approx \sum_{k=0}^\infty k\cdot \frac{\lambda^k e^{-k}}{k!} = \lambda\]
+
+\subsection*{Part II - Conjecture}
+\textbf{The law of large numbers:} for almost all discrete CDFs and n sufficiently large
+\[\boxed{\bar{X}_n = \frac{X_1 + X_2  +... + X_n}{n} \approx \sum_{k=0}^K x_k \cdot p_k}\]
+
+\subsection*{Part III - Definition}
+\textbf{Discrete Definition:} Let X be a discrete random variable with CDF 
+\[F_X(x) = \sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+If 
+\[\sum_{k=0}^K |x_t| \cdot p_k < +\infty\]
+then we call the following sum \emph{the expected value/mean of X}:
+\[\mathbb{E}(X) = \sum_{k=0}^K x_k \cdot p_k\]
+
+\textbf{Continuous Definition:} Let X be a continuous random variable with PDF $p_X(x)$. If 
+\[\int_{-\infty}^{\infty} |x| \cdot p_X(x) \; dx < +\infty\]
+then we call the following the \emph{expected value/mean of X}:
+\[\mathbb{E}(X) = \int_{-\infty}^{\infty} x \cdot p_X(x)\; dx\]
+
+\section{Lecture March 8}
+\subsection*{Part I - Review}
+\textbf{Definition:} Let X be a discrete random variable with CDF 
+\[F_X(x) = \sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+\begin{enumerate}
+    \item If $\sum_{k=0}^K |x_k| \cdot p_k < \infty$, then we call $\sum_{k=0}^k x_k \cdot p_k$ the expected value of X denoted $\mathbb{E}(X)$
+    \item If $\sum_{k=0}^k |x_k| \cdot p_k = \infty$ we say $\mathbb{E}(X)$ does not exist 
+\end{enumerate}
+
+\subsection*{Part II - Example}
+\begin{align*}
+    K &:= \infty\\
+    x_k &:= (-1)^{k + 1}\cdot k \quad \forall k = 0, 1, 2, ...\\
+    p_0 &:=0\\
+    p_k &:= \frac{6}{\pi^2} \frac{1}{k^2} \quad \forall k = 1, 2, ...
+\end{align*}
+Then 
+\[\sum_{k=0}^K x_k \cdot p_k = \sum_{k=1}^\infty (-1)^{k + 1} \cdot k \cdot \frac{6}{\pi^2} \cdot \frac{1}{k^2} = \frac{6}{\pi^2}\sum_{k=1}^\infty \frac{(-1)^{k+1}}{k}\]
+from calculus, that series is equal to $\log 2$ so 
+\[= \frac{6}{\pi^2} \log 2\]
+
+\textbf{Question:} is $\mathbb{E}(X) = \frac{6}{\pi^2} \log 2$? 
+\textbf{Answer:} No. The expected value does not exist. 
+\[\sum_{k = 0}^K |x_k| \cdot p_k = \sum_{k=1}^\infty k \cdot \frac{6}{\pi^2}\frac{1}{k} = \infty\]
+because the sum diverges 
+
+\subsection*{Part III - Theory of Series}
+\textbf{Definition:} Let $\{a_k\}_{k=0}^\infty$ be an ordered series
+\begin{enumerate}
+    \item If $\lim_{n\to \infty}\sum_{k=0}^n a_k$ exists, we say $\sum_{k=0}^\infty a_k$ is convergent
+\end{enumerate}
+
+\textbf{Theorem:} If $\sum_{k=0}^\infty |a_k|$ is convergent, then so is 
+\[\sum_{k=0}^\infty a_k\]
+
+\textbf{Proof:} Follows from Cauchy's convergence test
+
+\textbf{Definition:} 
+\begin{enumerate}
+    \item If $\sum_{k=0}^\infty |a_k|$ is convergent, $\sum_{k=0}^\infty a_k$ is \emph{absolutely convergent}
+    \item If $\sum_{k=0}^\infty a_k$ is convergent but $\sum_{k=0}^\infty |a_k|$ is divergent, then $\sum_{k=0}^\infty a_k$ is \emph{conditionally convergent}
+\end{enumerate}
+\textbf{Remark:} This reduces the condition of the expected value definition to ``The expected value exists if the sum is absolutely convergent''
+
+\textbf{Definition:} Suppose $\mathbb{N} = \{0, 1, 2, ...\}$. Any bijective map (i.e. the map is one-to-one and onto; $\forall i \in \mathbb{N} \; \exists \text{ a unique } j: \sigma(j) = i$) $\sigma$ from $\mathbb{N} \mapsto \mathbb{N}$ is called a \emph{permutation}
+
+\textbf{Theorem:} 
+\begin{enumerate}
+    \item If $\sum_{k=0}^\infty a_k$ is absolutely convergent, 
+    \[\sum_{k=0}^\infty a_{\sigma(k)} = \sum_{k=0}^\infty a_k\]
+    for all permutations $\sigma$
+    \item (Riemann series theorem) If $\sum_{k=0}^\infty a_k$ is conditionally convergent, for any $A \in \R\cup\{-\infty, +\infty\}$, there exists a permutation $\sigma$ such that 
+    \[\sum_{k=0}^\infty a_{\sigma(k)} = A\]
+\end{enumerate}
+
+\textbf{Interpretation:} For a conditionally convergent sum, you can select a permutation such that the sum equals any value you want. This also offers a way to define the reals via results of sums of permutations.
+
+\textbf{Application to Expected Value:}
+\[\sum_{k=0}^\infty p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+where ``all $x_k$'s are created equal'' ($x_k$ is unordered). Then for an absolutely convergent sum
+\[\mathbb{E}(X) = \sum_{k=0}^\infty x_k \cdot p_k = \sum_{k=0}^\infty x_{\sigma(k)} \cdot p_{\sigma (k)}\]
+
+\section*{Lecture 19, March 10:}
+\subsection*{Part I - Review}
+\textbf{Definition:} Let X be a discrete RV with CDF 
+\[\sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, +\infty)}(x)\]
+\begin{enumerate}
+    \item If $\sum_{k=0}^K |x_k| \cdot p_k < \infty$ then $\mathbb{E}(X) = \sum_{k=0}^K x_k \cdot p_k$
+    \item If $\sum_{k=0}^ |x_k| \cdot p_k = \infty$ then $\mathbb{E}(X)$ does not exist
+\end{enumerate}
+
+\textbf{Question:} In the summation $\sum_{k=0}^\infty x_k \cdot p_k = x_0 p_0 + x_1 p_1 +...$, does the order matter?
+
+\textbf{Answer:} No! So long as 
+\[\sum_{k=0}^\infty x_k \cdot p_k = \sum_{k=0}^\infty x_{\sigma(k)} \cdot p_{\sigma(k)} \]
+for all permutations $\sigma$
+
+\begin{enumerate}
+    \item If $\sum_{k=0}^\infty |x_k| \cdot p_k < \infty$ then the permutation invariance is true and  $\sum_{k=0}^K x_k \cdot p_k < \infty$ is \emph{absolutely convergent}
+    \item If $\sum_{k=0}^\infty |x_k| \cdot p_k = \infty$ then the permutation invariance is false
+\end{enumerate}
+
+\textbf{Definition:} Let X be a continuous RV with PDF $p_X(x)$
+\begin{enumerate}
+    \item If $\int_{-\infty}^{\infty} |x| \cdot p_X(x)\; dx < \infty$, then $\mathbb{E}X = \int_{-\infty}^{\infty} x \cdot p_X(x)\; dx$
+    \item If $\int_{-\infty}^{\infty} |x| \cdot p_X(x)\; dx < \infty$, then $\mathbb{E}X$ does not exist 
+\end{enumerate}
+
+\textbf{Remark:} the condition ``$\int_{-\infty}^{\infty} |x| \cdot p_X(x)\; dx < \infty$'' is more subtle and requires Lebesgue integrals 
+
+\textbf{Example:} Let X be a continuous RV with PDF of the Cauchy-Lorentz distribution
+\[p_X(x) = \frac{1}{\pi(1 + x^2)}\]
+
+Claim: $\mathbb{E}X$ does not exist 
+Proof: HW 5
+
+\section*{Transformations of RV}
+\subsection*{Motivation:}
+Let $\Omega$ be the studetns taking APMA 1655.
+$X(\omega)$ is the score student $\omega$ gets in the final exam. 
+The professor wants to curve the scores such that 
+\[Y(\omega) = \min\{X(\omega)^2, 100\}\]
+\[g(x) = \min\{X^2, 100\} \implies Y(\omega) = g(X(\omega))\]
+
+\textbf{More rigorously:}
+Suppose we are given 
+\begin{itemize}
+    \item RV X: $\Omega \to \R$
+    \item a function g: $\R \to \R$
+    \item $\Omega \overset{X}{\to} \R \overset{g}{\to} \R$
+    \item $\omega \mapsto X(\omega) \mapsto g(X(\omega))$
+    \item $g(X)$ is a random variables $\omega \mapsto g(X(\omega))$
+\end{itemize}
+What is $\mathbb{E}[g(X)]$?
+
+\textbf{Definition:} Suppose X and g are given.
+\begin{enumerate}
+    \item Suppose X is discrete and has CDF $\sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, \infty)}$.
+    If $\sum_{k=0}^K |g(x_k)| \cdot p_k < \infty$ then 
+    \[\mathbb{E}[g(X)] = \sum_{k=0}^K g(x_k) \cdot p_k\]
+    Otherwise, $\mathbb{E}[g(X)]$ does not exist.
+
+    \item Suppose X is continuous and has PDF $p_X(x)$.
+    If $\int_{-\infty}^{\infty} |g(x)| \cdot p_X(x) \; dx < \infty$ then $\mathbb{E}[g(x)] = \int_{-\infty}^{\infty} g(x) \cdot p_X(x) \; dx$
+    Otherwise, $\mathbb{E}[g(x)] does not exist$
+\end{enumerate}
+
+\textbf{Definition:} Let X be a RV with CDF 
+\[F_X(x) = p \cdot F_Z(x) + (1-p )\cdot F_W(x)\]
+where 
+\begin{enumerate}
+    \item $0 \leq 0 \leq 1$
+    \item Z is a discrete RV with CDF $F_Z$
+    \item W is a continuous RV with CDF $F_W$
+\end{enumerate}
+Then
+\[\mathbb{E}X = p \cdot \mathbb{E}Z + (1 - p)\mathbb{E}W\] 
+(assuming $\mathbb{E}Z$ and $\mathbb{E}W$ exist)
+
+\textbf{Example:} 
+\[X = YZ + (1 - Y)W\]
+where 
+\begin{align*}
+    X &\sim \text{Bernoulli}(\frac{1}{3})\\
+    Y &\sim \text{Pois}(\lambda)\\
+    Z &\sim N(1000, 1)
+\end{align*}
+and all three are independent.
+
+Then 
+\[\mathbb{E}Z = \lambda \quad \mathbb{E}W = 1000\] 
+and 
+\[F_X(x) = \frac{1}{3}F_Z(x) + \frac{2}{3}F_W(x)\]
+so 
+\[\mathbb{E}X = \frac{1}{3}\lambda + \frac{2}{3}(1000)\]
+
+\section*{Lecture March 13: Variance}
+\subsection*{Part I - Motivation}
+\begin{itemize}
+    \item X follows a distribution
+    \item The distribution generates numbers $X_1, ... X_n$
+    \item $\bar{X}_n = \frac{1}{n}\sum_{i=1}^n X_i \approx \mathbb{E}X$
+    \item $e_n = |\bar{X}_n - \mathbb{E}X|$ 
+    (that is, the error is the distance between the average of n numbers and the expected value)
+\end{itemize}
+
+\subsection*{Part II - Exploring error}
+\textbf{Simulation 1:} Generate $X_1, ... X_n$ from Bernoulli(p)
+\emph{Claim:} 
+\[e_n = |\bar{X}_n - p| \overset{\text{likely}}{<} \sqrt{p(1-p)\frac{2\log(\log n)}{n}}\]
+\emph{Proof:} Derive from Brownian Motion
+
+\textbf{Simulation 2:} Generate $X_1, ... X_n$ from Pois($\lambda$)
+\emph{Claim:} 
+\[e_n = |\bar{X}_n - \lambda| \overset{\text{likely}}{<} \sqrt{\lambda\cdot \frac{2\log(\log n)}{n}}\]
+
+\textbf{Conjecture:} Generate $X_1, ..., X_n$ from a distribution. Then
+\[e_n = |\bar{X}_n - \mathbb{E}X| \overset{\text{likely}}{<} \sqrt{V \cdot \frac{2\log(\log n)}{n}}\]
+where $V$ is the variance and both the expected value and variance exist for the given distribution
+
+\textbf{Remark:} this is known as the ``law of the iterated logarithm'' 
+
+\subsection*{Part III - Variance}
+Let X be a random variable whose expected value $\mathbb{E}X$ exists. We define a function 
+\[g(x) = (x - \mathbb{E}X)^2\]
+Then the \emph{variance of X} is 
+\[\text{Var}(X) = \mathbb{E}[(x - \mathbb{E}X)^2]\]
+or the ``expected squared deviation from $\mathbb{E}X$
+
+\section*{Lecture March 15}
+\subsection*{Part I - Review of $\mathbb{E}[g(x)]$}
+If X is a discrete RV and has CDF $\sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, \infty)}(x)$ then (if it exists), 
+\[\mathbb{E}[g(x)] = \sum_{k=0}^K g(x_k) \cdot p_k\]
+
+If X is a continuous RV and has PDF $p_X(x)$ then (if it exists) 
+\[\int_{-\infty}^{\infty} g(x) \cdot p_X(x)\; dx\]
+
+\subsection*{Part II - Review of Variance}
+\textbf{Definition:} Let X be a RV whose expected value exists. Then the variance of X (if it exists) is 
+\[\text{Var}(X) = \mathbb{E}[(X - \mathbb{E}X)^2]\]
+
+\textbf{Remark:}
+\begin{enumerate}
+    \item If $\mathbb{E}[(X - \mathbb{E}X)^2] = \infty$, we say the variance does not exist 
+    \item IF X is discrete and has CDF  $\sum_{k=0}^K p_k \cdot \mathbf{1}_{[x_k, \infty)}(x)$, 
+    \[\text{Var}(X) = \sum_{k=0}^k (x_k - \mathbb{E}X)^2 \cdot p_k\]
+    \item If X is continuous and has PDF $p_X(x)$,
+    \[\text{Var}(X) = \int_{-\infty}^{\infty} (x - \mathbb{E}X)^2 \cdot p_X(x)\; dx\]
+\end{enumerate}
+
+\subsection*{Part III - Properties of Expected Values}
+Let X be a continuous or discrete RV. 
+\begin{enumerate}
+    \item For a constant c, $\mathbb{E}c = c$
+    \item Let $a$ and $b$ be two constants, then 
+    \[\mathbb{E}[aX + b] = a(\mathbb{E}X)+ b\]
+    \item Let $g_1(x), g_2(x), .. g_J(x)$ be functions. Suppose $\mathbb{E}[g_j](x)$ exists for all $k = 1, 2, ... J$. Then 
+    \[\mathbb{E}[g_1(X) + g_2(X) + ... + g_J(x)] = \mathbb{E}[\sum_{k=1}^J g_j(x)] = \sum_{j=1}^J \mathbb{E}[g_J(X)]\]
+    exists and shows that the expected value is linear 
+\end{enumerate}
+
+\textbf{Proof:} all the properties derive from the properties of the summation and the integral. Details are homework.
+
+\subsection*{Part IV - Properties of Variance}
+\begin{enumerate}
+    \item $\text{Var}(X) = \mathbb{E}[(X- \mathbb{E}X)^2] = \mathbb{E}(X^2) - (\mathbb{E}X)^2$
+    \textbf{Proof:} 
+    \begin{align*}
+        \mathbb{E}[(X- \mathbb{E}X)^2] &= \mathbb{E}[X^2 - 2(\mathbb{E}X)\cdot X + (\mathbb{E}X)^2]\\
+        &= \E X^2 + \E[-2(\E X) \cdot X] + (\E X)^2 \\
+        &= \E X^2 - 2(\E X)(\E X)  + (\E X)^2 \\
+        &= \E(X^2) - (\E X^2) \quad \blacksquare
+    \end{align*}
+
+    \item $\text{Var}(aX + b) = a^2 \text{Var}(X)$
+    
+    \textbf{Proof:} HW 
+    \item For any constant x, $\text{Var}(c) = 0$
+    
+    \textbf{Proof:} $\text{Var}(c) = \E(c^2) - (\E c)^2 = c^2 - c^2 = 0$
+
+    \item Let X be a RV. If $\text{Var}(X) = 0$ then there exists a constant c such that $\P(\{\omega \in \Omega : X(\omega) = c\}) = 1$
+    
+    \textbf{Proof:} See real analysis.
+\end{enumerate}
+
+\section*{Lecture March 17:}
+\subsection*{Part I - Review:}
+If $X(\omega) = c$ for all $\omega \in \Omega$ for some random variable X and constant c, 
+\[\text{Var}(X) = 0\]
+Additionally, if $\text{Var}(X) = 0$ then $\exists c$ such that 
+\[\P(\{\omega \in \Omega : X(\omega) - c\}) = 1\]
+
+\subsection*{Part II - Law of Large Numbers (LLN)}
+\textbf{A sloppy version:}
+Let X be a RV that follows a distribution which generates random numbers $X_1, X_2, ..., X_n$. Then if $\E X$ exists
+\[\bar{X}_n = \frac{X_1 + X_2 + ... + X_n}{n} \approx \E X\]
+e.g. if \begin{itemize}
+    \item $X \sim \text{Bernoulli}(p) \implies \E X = p$
+    \item $X \sim \text{Pois}(\lambda) \implies \E X = \lambda$
+\end{itemize}
+However, this raises some questions: What does $\approx$ mean? In addition to the existence criteria, what other conditions are necessary?
+
+\subsection*{Part III - Preparations for the Formal}
+\textbf{Definition:} Let $\{X_i\}_{i=1}^\infty$ be an infinitely long sequence of RVs defined on $(\Omega, \P)$. We say $X_1, X_2, ...$ are independent if 
+\[\P(\{\omega\in \Omega: X_i \in A_i \quad \forall i = 1, 2, ..., n\}) = \prod_{i=1}^{n} \P(\{\omega \in \Omega : X_i(\omega \in A_i)\})\]
+for any positive integer n, and any subsets $A_1, ... A_n \subset \R$
+
+\textbf{Definition:} Let $\{X_i\}_{i=1}^\infty$ be an infinitely long sequence of RVs defined on $(\Omega, \P)$. We say $X_1, X_2, ...$ are independently and identically distributed if 
+\begin{enumerate}
+    \item $X_1, X_2, ...$ are independent
+    \item $X_1, X_2, ...$ share the same CDF, i.e. $F_{X_1} = F_{X_2} = F_{X_3} = ...$
+\end{enumerate}
+
+\subsection*{Part IV - The Law of Large Numbers}
+\textbf{Theorem:} Let $\{X_i\}_{i=1}^\infty$ be an infinitely long sequence of RVs defined on $(\Omega, \P)$. Suppose $X_1, X_2, ...$ are independently and identically distributed and  
+\[A \{\omega \in \Omega : \lim_{n\to \infty} \frac{X_1(\omega) + X_2(\omega) + ... + X_n(\omega)}{n} = \lim_{n\to \infty} \bar{X}_n = \mathbb{E} X_1\}\]
+where $\mathbb{E} X_1 = \E X_2 = ...$ because the CDFs are equal. 
+Then 
+\[\P(A) = 1\]
+
+\textbf{Example:} Flip a fair coin infinitely many times. \begin{itemize}
+    \item An outcome $\omega$ is then an infinitely long sequence of H and T. 
+    \item $\Omega = \{\omega = (\omega^{(1)}, \omega^{(2)}, \omega^{(3)}, ...) : \text{each $\omega^{(i)}$ is either H or T}\}$
+    \item  
+    \[X_i(\omega) = \begin{cases}
+        1 \quad \omega^{(i)} = H\\
+        0 \quad \omega^{(i)} = T\\
+    \end{cases}\]
+    \item $\exists \P$ such that 
+    \[\P(\{\omega \in \Omega: X_i(\omega) = 1\}) = \P(\{\omega \in \Omega: X_i(\omega) = 0\}) = \frac{1}{2}\]
+    and $X_1, X_2, ...$ are independent which implies $X_1, X_2, ...$ are identically and independently distributed.
+\end{itemize} 
+Notice that 
+\[A = \{\omega \in \Omega : \lim_{n \to \infty} \bar{X}_n = \frac{1}{2}\}\]
+And by LLN, $\P(A) = 1$ but $A \neq \Omega$.
+Note: To see why, imagine a sequence of infinite tails such that 
+\[X(\omega^*) = 0 \implies \lim_{n\to \infty}\bar{X}_n(\omega^*) = 0 \implies \omega^* \notin A \]
+
+\section*{Lecture March 20}
+\subsection*{Part I - Review of the Law of Large Numbers}
+\textbf{Theorem:} Let $\{X_i\}_{i=1}^\infty$ be an infinitely long sequence of RVs defined on $(\Omega, \P)$. Suppose the random variables are independently and identically distributed (they share the same CDF) and $\E X_1$ exists. Then 
+\[\P\left(\{\omega \in \Omega : \lim_{n \to \infty} \bar{X}_n = \E X_1\}\right) = 1\]
+
+Note that because the CDFs are the same,
+\[\E X_1 = \E X_2 = \E X_3 = ...\]
+
+Additionally, denote 
+\[\bar{X}_n = \frac{X_1(\omega) + ... + X_n(\omega)}{n}\]
+as the \emph{sample average} which determines $\E X_1$ (the \emph{population average}).
+
+Then, the law of large numbers can be expressed ``the sample average converges to the population average with probability 1''
+
+Note that the independence condition is crucial and without it, the LLN is not necessarily true.
+
+\textbf{Example:} 
+X is a RV on $(\Omega, \P)$ where $X \sim \text{Bernoulli}(\frac{1}{2})$ 
+For each $i = 1, 2, ...$
+\[X_i(\omega) = X(\omega) \quad \forall \omega \in \Omega\]
+\[X_1 = X_2 = X_3 = ... = X \implies X_1, X_2, ... \text{ are not independent}\]
+so 
+\[A = \{\omega \in \Omega : \bar{X}_n = \frac{1}{2}\} = \{\omega \in \Omega : X(\omega) = \frac{1}{2}\}\]
+The LLN anticipates $\P(A) = 1$ however 
+\[\P(A) = \P(X = \frac{1}{2}) = 0\]
+so the LLN does not hold 
+
+\subsection*{Part II - Monte Carlo Integration}
+\textbf{Motivation:} Integrals are HARD. 
+\[I = \int_0^1 \cos^{-1}\left(\frac{\cos(\frac{\pi}{2}X)}{1 + 2\cos(\frac{\pi}{2}x)}\right)\; dx = \frac{5\pi}{12}\]
+But we can approximate it with the LLN!
+First, let $U \sim \text{Unif}(0, 1)$ whose PDF is $\mathbf{1}_{[0, 1)}(x)$
+Denote the crazy integrand $g(x)$ then 
+\[I = \E [g(U)]\]
+
+\textbf{Theorem: Generalized Law of Large Numbers}
+Let $\{X_i\}_{i=1}^\infty$ be an infinitely long sequence of RVs defined on $(\Omega, \P)$. Let $g(x)$ be a continuous function. Suppose the random variables are independently and identically distributed (they share the same CDF) and $\E[g(X_1)]$ exists. Then 
+\[\P\left(\{\omega \in \Omega : \lim_{n \to \infty} \frac{g(X_1(\omega)) + ... + g(X_n(\omega))}{n} = \E[g(X_1)]\}\right) = 1\]
+
+So applied to the example above using this generalized LLN, we can generate $X_1(\omega), X_2(\omega), ... \overset{iid}{\sim} \text{Unif}(0, 1)$. Then the sample average of $g(X_i)$ will approximate the value of the integral for enough random numbers. 
+
+\section*{Lecture March 22: Monte Carlo Integration}
+\subsection*{Part I - Introduction}
+Let X be a continuous RV with PDF $p_X(x)$ and $g(x)$ is a real-values function. 
+Then 
+\[E[g(x)] = \int_{-\infty}^{\infty} g(x) \cdot p_X(x)\; dx\] 
+and 
+\[\text{Var}[g(x)] = \int_{-\infty}^{\infty} (g(x) - \E[g(x)])^2 \cdot p_X \; dx\]
+(if the expected exists). 
+
+\subsection*{Part II - An Example}
+Let $X \sum \text{Unif}(0, 1)$ and 
+\[g(x) = cos^{-1}\left(\frac{\cos(\frac{\pi}{2}X)}{1 + 2\cos(\frac{\pi}{2}x)}\right)\qquad 0 < x < 1\] 
+and the PDF of X is 
+\[p_X(x) = \mathbf{1}_{(0, 1)}(x) = \begin{cases}
+    1 \quad 0 < x < 1\\
+    0 \quad \text{otherwise}
+\end{cases}\]
+So 
+\[\E[g(X)] = \int_{-\infty}^{\infty} g(x)\cdot \mathbf{1}_{(0, 1)}(x) \;dx= \int_0^1g(x)\; dx = \int_0^1 cos^{-1}\left(\frac{\cos(\frac{\pi}{2}X)}{1 + 2\cos(\frac{\pi}{2}x)}\right)\; dx = \frac{5\pi}{12}\]
+This is a VERY HARD integral to calculate but we can approximate it with Monte Carlo integration. 
+
+Using the Generalized Law of Large Numbers, we define an infinite sequence of independently and identically distributed RVs,
+\[X_1, X_2, X_3, ... \sim \text{Unif}(0, 1)\]
+so 
+\[\frac{g(X_1) + g(X_2) + ... g(X_n)}{n} \approx \E[g(X_1)] = \int_0^1 \cos^{-1}\left(\frac{\cos(\frac{\pi}{2}X)}{1 + 2\cos(\frac{\pi}{2}x)}\right)\; dx\]
+
+This is especially useful for higher dimensional integrals as it allows us to take the running sum of only n numbers rather than say a 100-dimensional Riemann sum. 
+
+Note that for other integrals with bounds $(a, b)$ rather than $(0, 1)$ we can still use the same method by defining a new random variable from $U \sim\text{Unif}(0, 1)$, where:
+\[X = a + (b- a)\cdot U \sim \text{Unif}(a, b)\]
+and then calculating $\bar{X}_n$
+
+Also note that there will be some error between the approximated value and the true value 
+\[e_n(\omega) = \frac{g(X_1(\omega)) + ... + g(X_n(\omega))}{n} - \E[g(X_1)]\]
+and by \emph{The Law of the Iterated Logarithm} $|e_n(\omega)|$ is likely to be smaller than 
+\[\sqrt{\text{Var}[g(X_1)] \cdot \frac{2\log (\log n)}{n}}\]
 \end{document}
 
