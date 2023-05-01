@@ -11,14 +11,12 @@
 \usepackage{subfig}
 \usepackage{fancyhdr}
 \usepackage{sectsty}
+\usepackage{titling}
 
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt} 
 \lhead{}\chead{}\rhead{}
 \lfoot{}\cfoot{\thepage}\rfoot{}
-
-%%% SECTION TITLE APPEARANCE
-\allsectionsfont{\sffamily\mdseries\upshape} 
 
 %%% ToC (table of contents) APPEARANCE
 \usepackage[nottoc,notlof,notlot]{tocbibind} 
@@ -36,12 +34,14 @@
 \newcommand{\qed}{\quad \blacksquare}
 \newcommand{\brak}[1]{\langle #1 \rangle}
 \newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\text{Var}\;}
 \title{Honors Statistical Inference I - APMA 1655}
 \author{Milan Capoor}
 \date{Spring 2023}
 
 \begin{document}
 \maketitle
+\section*{\textbf{Probability}}
 \section{Lecture 1, Jan 25: Random outcomes \& sample spaces}
 Features of random events:
 \begin{itemize}
@@ -1141,5 +1141,762 @@ Also note that there will be some error between the approximated value and the t
 \[e_n(\omega) = \frac{g(X_1(\omega)) + ... + g(X_n(\omega))}{n} - \E[g(X_1)]\]
 and by \emph{The Law of the Iterated Logarithm} $|e_n(\omega)|$ is likely to be smaller than 
 \[\sqrt{\text{Var}[g(X_1)] \cdot \frac{2\log (\log n)}{n}}\]
+
+\section{Lecture March 24:}
+\subsection*{Part I - Law of the Iterated Logarithm}
+\textbf{Theorem:} Let $X_1, X_2, X_3,...$ be identically and independently distributed RVs defined on $(\Omega, \P)$ Suppose $\E X_1$ and $\text{Var}(X_1)$ exist. 
+Then, 
+\[\P\left(\{\omega \in \Omega : \lim_{m \to \infty} \left[
+\sup_{n \geq m} \left(\frac{e_n(\omega)}{\sqrt{\text{Var}X_i \frac{2\log(\log n)}{n}}}\right)\right] = 1\}\right) = 1\]
+
+Heuristically, when n is large,
+\begin{empheq}[box=\fbox]{align*}
+    \P(\{\omega \in \Omega : |e_n(\omega)| \leq \sqrt{\text{Var}X_i \frac{2\log(\log(n))}{n}}\}) &\approx 1\\
+    \P(\{\omega \in \Omega : |e_n(\omega)| > \sqrt{\text{Var}X_i \frac{2\log(\log(n))}{n}}\}) &\approx 0\\
+\end{empheq}
+
+\subsection*{Part II - Example}
+\[U_1, U_2, U_3, ... \overset{iid}{\sim} \text{Unif}(0, 1)\] 
+\[g(x) = \cos^{-1}\left(\frac{\cos(\frac{\pi}{2}x)}{1 + 2\cos(\frac{\pi}{2}x)}\right)\]
+By the generalized LLN, 
+\[\frac{g(U_1(\omega)) + ... + g(U_n(\omega))}{n} \approx \E[g(U)] = \int_0^1 g(x) \; dx = \frac{5\pi}{12}\]
+(By Monte Carlo simulation)
+Then,
+\[X_i(\omega) = g(U_i(\omega)) \quad \forall i, \omega\]
+\[\implies \bar{X}_n(\omega) \approx \E X_1 = \E[g(U)]\]
+\[e_n(\omega) = \bar{X}_n(\omega) - \E X_1\]
+
+Let's say we want the error to be no higher than $10^{-5}$ so 
+\[|e_n(\omega)| \leq \sqrt{\text{Var}(X_i) \cdot \frac{2\log (\log n)}{n}} \leq 10^{-5}\]
+Using another Monte carlo simulation to calculate $\text{Var}(X_i) \approx 0.007556$, we then may choose a large $n$ such that the inequality is true. 
+
+\subsection*{Part III - Random Walks}
+\textbf{Definition:} Let $\{X_i\}_{i=1}^\infty$ be a sequence of RVs defined on $(\Omega, \P)$ and $X_1, X_2, ...$ are iid. 
+For each positive n, we define 
+\[S_n(\omega) = X_1(\omega) +... + X_n(\omega)\]
+The sequence $\{S_n(\omega)\}_{n=1}^\infty$ is a \emph{random walk}
+
+\textbf{Example 1:} Let $X_1, X_2, ...$ iid that satisfy 
+\[\P(X_1 = -1) = \P(X_2 = 1) = \frac{1}{2}\]
+then $\{S_n(\omega)\}_{n=1}^\infty$ is the ``1-dim simple RW''
+
+\textbf{Example 2:} $X_1, X_2, ... \overset{iid}{\sim} N(0, \sigma^2)$ for some fixed $\sigma$. Then $\{S_n(\omega)\}$ is a discrete-time Brownian motion (introduced by Einstein in 1905).
+
+\section*{Lecture April 3: The Central Limit Theorem (CLT)}
+\subsection*{Part I - Introduction}
+Let $\{X_i\}_{i=1}^\infty$ be a sequence of iid RV on $(\Omega, \P)$. If for all n,
+\[S_n(\omega) = X_1(\omega) + ... + X_n(\omega)\]
+then $\{S_n(\omega)\}_{n=1}^\infty$ is a random walk. And 
+\[\bar{X}_n(\omega) = \frac{S_n(\omega)}{n} \approx \E X_1 \quad (n \to \infty)\]
+So 
+\[e_n(\omega) = \bar{X}_n(\omega) - \E X_1\]
+where
+\[\P(\{\omega \in \Omega: |e_n(\omega)| \leq \sqrt{\text{Var} X_1 \cdot \frac{2\ln \ln n}{n}}\}) \approx 1\]
+
+\textbf{Preview of the CTL:}
+\[\sqrt{n} \cdot e_n(\omega) \dot \sim N(0, \text{Var} X_1)\]
+which means that the product ``asymptotically follows'' the normal distribution 
+
+\subsection*{Part II - Applications of the Central Limit Theorem}
+\begin{enumerate}
+    \item A different way of quantifying $e_n(\omega)$
+    \item Foundation of ``hypothesis testing'' and ``confidence intervals''
+\end{enumerate}
+
+\subsection*{Part III - The Theorem}
+\textbf{Theorem:} Let $\{X_i\}_{i=1}^\infty$ be a sequence of iid RVs on $(\Omega, \P)$. Suppose $\E X_i$ and $\text{Var}\, X_i$ exist. Define a sequence of random variables $\{G_n\}_{n=1}^\infty$ so that 
+\[G_n(\omega) :=\sqrt{n} \cdot e_n(\omega) = \sqrt{n} \cdot (\bar{X}_n(\omega) - \E X_1)\]
+Then, the CDF of $G_n$ converges to the CDF of $N(0, \Var X_1)$ as $n \to \infty$, i.e.,
+\[\lim_{n\to \infty}\P(\omega \in \Omega:G_n(\omega) \leq x) = \int_{-\infty}^x \frac{1}{\sqrt{2\pi \cdot \Var X_1}} \cdot \exp\left(-\frac{t^2}{2\Var X_1}\right)\; dt\]
+Briefly, 
+\[G_n(\omega) =\sqrt{n} \cdot e_n(\omega) \dot \sim N(0, \Var X_1)\]
+
+\textbf{Corollary:} Suppose we are under the same conditions as the CLT. Then the CDF of $\frac{G_n(\omega)}{\sqrt{\Var X_1}}$ converges to the CDF of $N(0, 1)$, i.e.
+\[\lim_{n\to \infty}\P(\omega \in \Omega: \frac{G_n(\omega)}{\sqrt{\Var X_1}} \leq x) = \int_{-\infty}^x = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{t^2}{2}\right)\; dt\]
+Briefly, 
+\[\sqrt{n} \cdot \frac{\bar X_n(\omega) - \E X_1}{\sqrt{\Var X_1}}\dot \sim N(0, 1)\]
+
+\subsection*{Part IV - Error Bounds}
+Let $\{X_i\}_{i=1}^\infty$ be a sequence of iid RVs on $(\Omega, \P)$. Suppose $\E X_i$ and $\text{Var}\, X_i$ exist. 
+
+The LIL implies 
+\[\lim_{n\to \infty} \P\left(\{\omega \in \Omega : |e_n(\omega)| \leq \sqrt{\Var X_1 \cdot \frac{2
+log(\log n)}{n}}\}\right) = 1\] 
+or in other words, ``with probability (confidence) around 100\%, $|e_n(\omega)| \leq \sqrt{2\log(\log n)} \cdot \sqrt{\frac{\Var X_1}{n}}$''
+
+But from the CLT,
+\begin{align*}
+    \P&\left(\{\omega \in \Omega : |e_n(\omega)| \leq z \cdot \sqrt{\frac{\Var X_1}{n}}\}\right)\\
+    &=  \P\left(\{\omega \in \Omega : -z \leq \sqrt{n} \cdot \frac{e_n(\omega)}{\sqrt{\Var X_1}} \leq z\}\right)\\
+    &= \P\left(\{\omega \in \Omega : \sqrt{n} \cdot \frac{e_n(\omega)}{\sqrt{\Var X_1}} \leq z\}\right) - \P\left(\{\omega \in \Omega : \sqrt{n} \cdot \frac{e_n(\omega)}{\sqrt{\Var X_1}} \leq -z\}\right)\\
+    &\approx \Phi(z) - \Phi(-z)\\
+    &= 2\Phi(z) - 1 \quad (z > 0)
+\end{align*}
+Where $\Phi$ is the CDF of $N(0,1)$.
+
+Now let $z^*$ denote the positive real number such that $\Phi(z^*) = 0.975$ so 
+\[ \P\left(\{\omega \in \Omega : |e_n(\omega)| \leq z^* \cdot \sqrt{\frac{\Var X_1}{n}}\}\right) \approx 2\Phi(z^*) - 1 = 0.95\]
+
+\textbf{Note:} Generally, you may choose $z^*$ such that $\Phi(z^*) = 1 - \alpha /2$ so $2\Phi(z^*)- 1 = 1-\alpha$. Then $z^*$ is called the $1 - \alpha/2$ quantile of $N(0,1)$ and must be computed using a computer. For example, the 0.975 quantile is 1.959964. 
+
+This means that using the CLT we have ``with probability (confidence) 95\% we have 
+\[|e_n(\omega)| \leq z^* \cdot \sqrt{\frac{\Var X_1}{n}} \approx 1.96\cdot \sqrt{\frac{\Var X_1}{n}} \]''
+
+\textbf{Conclusion:} Using the CLT we can establish much tighter error bounds for large n at the cost of only 5\% confidence. 
+
+\section{Lecture April 7}
+\textbf{Definition:} Ler $G_1, G_2, ...$ be a sequence of RVs. We say $G_n$ \emph{converge weakly} to a continuous RV $G$ is 
+\[\lim_{n\to \infty} F_{G_n}(x) = F_G(x)\]
+for all real x.
+
+\section*{Lecture April 7: Proof of the CLT}
+\subsection*{Part I - Weak Convergence}
+\textbf{Definition:} A sequence $G_1, ...G_n$ of RVs \emph{converges weakly} to a continuous RV G if 
+\[\lim_{n \to \infty} F_{G_n}(x) = F_G(x) \quad \forall x \in \R\]
+This is briefly denoted $G_n \overset{w}{\to} G$.
+
+\textbf{Remarks:}
+\begin{enumerate}
+    \item $G_n$ is sead to converge ``stronly'' to G if 
+    \[\lim_{n\to \infty} G_n(\omega) = G(\omega) \quad \forall \omega \in \Omega\]
+
+    \item Let $X_1, ..., X_n$ be iid Rvs whose expected value and variances exist. Then 
+    \[G_n(\omega) = \sqrt{n} \cdot e_n(\omega)\]
+    and 
+    \[G \sim N(0, \Var X_1)\]
+\end{enumerate}
+
+Thus, the CLT stated 
+\[\lim_{n\to \infty} F_{G_n}(x) = \text{CDF of } N(0, \Var X_1) = F_G(x)\]
+can also be written 
+\[G_n \overset{w}{\to} G \sim N(0, \Var X_1)\]
+
+\subsection*{Part II - Moment Generating Functions}
+\textbf{Definition:} Let X be a RV. 
+Then
+\[M_X(t) = \E [e^{t \cdot X}]\]
+is the \emph{moment-generating function of X},
+provided the expected value exists for all $t\in \R$
+
+Note that the name ``moment-generating'' comes from the Taylor Expansion:
+\[e^{tX} = 1 + tX + \frac{t^2X^2}{2!} + \frac{t^3X^3}{3!} + ...\]
+\begin{align*}
+    \E[e^{tX}] &= \E\left[\sum_{n=0}^\infty \frac{t^nX^n}{n!}\right]\\
+    &= \sum_{n=0}^\infty \E\left[\frac{t^nX^n}{n!}\right] \quad (\text{proved in homework})\\
+    &= 1 + t\E X + \frac{t^2}{2!}\E X^2 + \frac{t^3}{3!} + ...\\
+    \frac{d}{dt} M_X(t) &= \E X + t\E X^2 + \frac{t^2}{2!} \E X^3 +...
+\end{align*}
+Then notice that 
+\[\frac{d}{dt} M_X(0) = \E X\]
+which is called the ``first moment of X''.
+
+Taking the second derivative, we get 
+\[\frac{d^2}{dt^2}M_X(0) = \E X^2\]
+which is the ``second moment of X''
+
+Generally, 
+\[\frac{d^k}{dt^k} M_X(0) = \E X^k\]
+gives the ``k-th moment of X''
+
+\textbf{Theorem:} Let $G, G_1, G_2, ...$ be a sequence of RVs. If 
+\[\lim_{n \to \infty} M_{G_n}(t) = M_G(t)\]
+then 
+\[G_n \overset{w}{\to} G\]
+
+\textbf{Proof:} Omitted
+
+\textbf{Theorem:} Let $X, X_1, ..., X_n$ be RVs. 
+\[S_n(\omega) := X_1(\omega) + X_2(\omega) + ... + X_n(\omega) = \sum_{i=1}^n X_i(\omega)\]
+\begin{enumerate}
+    \item If $X_1, ..., X_n$ are independent 
+    \[M_{S_n}(t) = \prod_{i=1}^n M_{X_i}(t)\]
+
+    \item If $X_1, ..., X_n$ are also identically distributed
+    \[M_{S_n}(t) = \left(M_{X_1}(t)\right)^n\]
+    (because they share the same moment generating function by iid-ness)
+\end{enumerate}
+
+\subsection*{Part III - Some Lemmas}
+\textbf{Lemma 1:} Let $\{C_n\}_{n=1}^\infty$ be a sequence of real numbers satisfying 
+\[\lim_{n \to \infty} C_n = 0\]
+If 
+\[\lim_{n \to \infty} n \cdot C_n = \lambda\]
+then 
+\[\lim_{n \to \infty} (1 + C_n)^n = e^\lambda\]
+
+\textbf{Proof:} See lecture notes
+
+\textbf{Lemma 2:} If $G \sim N(0, \sigma^2)$ then 
+\[M_G(t) = e^{\frac{t^2\sigma^2}{2}}\]
+
+\textbf{Proof:} Homework
+
+\subsection*{Part IV - Proof of the CLT}
+\begin{align*}
+    G_n &= \sqrt{n} \left[\left(\frac{1}{n}\sum_{i=1}^n X_i\right) - \E X_1\right]\\
+    &= \sqrt{n} \cdot \left(\frac{1}{n}\sum_{n=1}^n X_i\right) - \frac{1}{n}n \E X_1\\\\
+    &= \sqrt{n} \cdot \frac{1}{n} \left[\sum_{i=1}^n X_1 - \sum_{i=1}^n \E X_1\right]\\
+    &= \sqrt{n} \cdot \frac{1}{n} \left[\sum_{i=1}^n (X_i - \E X_1)\right]
+\end{align*}
+then 
+\begin{align*}
+    M_{G_n}(t) &= \E[e^{t G_n}]\\
+    &= \E [e^{\sum_{i=1}^n \left(\frac{t}{\sqrt{n}}(X_i - \E X_1)\right)}]\\
+    &= \left(\E[e^{\frac{t}{\sqrt{n}}}(X_1 - \E  X_1)]\right)^n\\
+    &= \left(\E \left[1 + \frac{t}{\sqrt{n}}(X_1 - \E X_1) + \frac{t^2}{2n}(X_1 - \E X_1)^2 + \sum_{k=3}^\infty \frac{t^k}{k \cdot n^{k/2}} (X_1 - \E X)^k \right]\right)^n\\
+    &\approx (1 + \frac{t^2}{2n}\Var X_1)^n
+\end{align*}
+So 
+\[M_{G_n}(t) \approx (1 + c_n)^n \to e^{c_n} = \text{MGF of } N(0, \Var X_1)\]
+where $c_n = \frac{t^2}{2n}\Var X_1$
+
+\section*{Lecture April 10: Random Vectors}
+\textbf{Definitions:}
+\begin{enumerate}
+    \item A (column) vector $\vec{X} = (X_1, X_2, \, ..., X_n)^T$ is called a random vector defined on $(\Omega, \P)$ if each of its components is a RV defined on $(\Omega, \P)$
+    \item The CDF of $\vec{X}$ is an n-variable function 
+    \begin{align*}
+        F_{\vec{X}}(x_1, x_2,\, ..., x_n) &= \P(\{\omega \in \Omega: X_1(\omega) \leq x_1, \, ..., X_n(\omega) \leq X_n\})
+        \\
+        &= \P\left(\bigcap_{i=1}^n \{\omega \in \Omega: X_i(\omega) \leq x_i\}\right)
+    \end{align*}
+    \item $\vec{X} = (X_1,\, ..., X_n)^T$ is said to be a continuous vector if $F_{\vec{X}}$ is differentiable
+\end{enumerate}
+The PDF of $\vec{X}$ is defined by 
+\[p_{\vec{X}}(x_1,\, ..., x_n) = \frac{\partial}{\partial x_1} \frac{\partial}{\partial x_2} ...\frac{\partial}{\partial x_n} F_{\vec{X}}(x_1,\, x_2, ..., x_n)\]
+
+\textbf{Example:} 
+For $n = 2$, 
+\[p_{\vec{X}}(x_1, x_2) = \frac{\partial}{\partial x_1}\left(\frac{\partial}{\partial x_2} F_{\vec{X}}(x_1, x_2)\right)\]
+
+\textbf{Definition:} Let $\vec{X} = (X_1, X_2, \, ..., X_n)$ be a continuous random vector with PDF $p_{\vec{X}}(x_1, x_2, \, ..., x_n)$. Suppose $g(x_1, x_2, \, ..., x_n) = g(\vec{x})$ is an n-variable function. Then
+\[\E[g(\vec{X})] = \underbrace{\int_{-\infty}^{\infty} ... \int_{-\infty}^{\infty}}_{n \text{ integrals}} g(x_1, \, ..., x_n) \cdot p_{\vec{X}}(x_1, \, ..., x_n)\; dx_1 \, ...\, dx_n\]
+if 
+\[\int_{\R^n} |g(x_1, \, ..., x_n)| \cdot p_{\vec{X}}(x_1, \, ..., x_n)\; dx_1 \, ...\, dx_n < \infty.\]
+and $\E[g(\vec{X})]$ is a scalar. 
+
+\textbf{Theorem:} Let $\vec{X} = (X_1, \, ..., X_n)$. If $X_1, \, ..., X_n$ are independent, then 
+\[F_{\vec{X}}(x_1, \, ..., x_n) = \prod_{i=1}^n F_{X_i}(x_i).\]
+\textbf{Proof:} Omitted
+
+Furthermore, if $\vec{X}$ is also a continuous random vector. 
+\[p_{\vec{X}}(x_1, \, ..., x_n) = \prod_{i=1}^n p_{X_i}(x_i)\]
+
+\textbf{Proof:} 
+\begin{align*}
+    p_{\vec{X}}(x_1, \, ..., x_n) &= \frac{\partial}{\partial x_1} ...\frac{\partial}{\partial x_n} F_X(x_1,\, ..., x_n)\\
+    &= \frac{\partial}{\partial x_1} ...\frac{\partial}{\partial x_n}\prod_{i=1}^n F_{X_i}(x_i)\\
+    &= \left(\prod_{i=1}^n \frac{\partial}{\partial x_i} F_{X_i}(x)\right)\\
+    &= \prod_{i=1}^n p_{X_i}(x_i) \qed
+\end{align*}
+
+\textbf{Theorem:} $X_1, \, ..., X_n$ are iid RVs. Define $S_n = \sum_{i=1}^n X_i$. Then
+\[M_{S_n}(t) = \left(M_{X_1}(t)\right)^n\]
+
+\textbf{Proof:} $\vec{X} = (X_1, \, ..., X_n)$. To simplify the proof (though it is not necessary for the result), assume $\vec{X}$ is continuous. 
+\begin{align*}
+    M_{S_n}(t) &=\E[e^{tS_n}] \\
+    &= \E\left[e^{t X_1 + tX_2+ ... + tX_n}\right]\\
+    &= \E \left[\prod_{i=1}^n e^{tX_i}\right]\\
+    &= \int_{\R^n} e^{tX_i} \cdot p_X(x_1, \, ..., x_n)\; dx_1\, ...\, dx_n\\
+    &= \int_{\R^n} \left(\prod_{i=1}^n e^{tX_i}\right)\left(\prod_{i=1}^n p_{X_i}(x_i)\right)\; dx_1\, ...\, dx_n \quad (\text{by independence})\\
+    &= \int_{\R^n} \prod_{i=1}^n \left(e^{tX_i} \cdot p_X(x_i)\right)\; dx_1\, ...\, dx_n\\
+    &= \int_{\R^{n-1}} \prod_{i=2}^n e^{tX_i} \cdot p_{X_i}(x_i)\left(\int_{-\infty}^{\infty} e^{tX_1}\cdot p_{X_1}(x_1)\; dx_1\right)\; dx_2\, ... dx_n\\
+    &= \int_{\R^{n-1}} \prod_{i=2}^n e^{tX_i} \cdot p_{X_i}(x_i)\E[e^{tX_1}]\; dx_2\, ... dx_n\\
+    &= \int_{\R^{n-1}} \prod_{i=2}^n e^{tX_i} \cdot p_{X_i}(x_i)M_{X_1}(t)\; dx_2\, ... dx_n\\
+    &= \prod_{n=1}^n M_{X_i}(t)\\
+    &= \left(M_{X_1}(t)\right)^n \quad \text{by identical distribution} \quad \blacksquare
+\end{align*} 
+
+\section*{Lecture April 12: Proof of the CLT}
+Let $\{X_i\}_{i=1}^\infty$ be a sequence of iid RVs. Their expected values and variances exist. 
+\[G_{n,\, \alpha} = n^\alpha \cdot (\bar{X}_n - \E X_1) \dot \sim \begin{cases}
+    ? \qquad \qquad\qquad\; \alpha < \frac{1}{2}\\
+    N(0, \Var X_2) \quad \alpha = \frac{1}{2}\\
+    ? \qquad \qquad \qquad \; \alpha > \frac{1}{2}
+\end{cases}\]
+Note: The missing cases will be resolved in Homework. 
+
+Then, with $G_n(\omega) = G_{n, \, \frac{1}{2}}(\omega)$ this gives us the statement of the CLT:
+\[G_n \overset{w}{\to} = G \sim N(0, \Var X_1)\]
+
+\textbf{Proof:}
+It suffices to show that 
+\[\lim_{n\to \infty} M_{G_n}(t) = M_G(t) = \exp(\frac{t^2}{2} \cdot \Var X_1)\]
+
+Observe:
+
+(\textbf{Note:} for different $\alpha$ all steps are the same except the coefficient of the exponent)
+\begin{align*}
+    G_n &= \sqrt{n} \cdot \left[\left(\frac{1}{n}\sum_{i=1}^n X_i\right) - \E X_1\right]\\
+    &= \frac{1}{\sqrt{n}} \cdot \sum_{i=1}^n (X_i - \E X_1)\\
+    M_{G_n}(t) &= \E[e^{tG_n}] = \E[\exp(\frac{t}{\sqrt{n}} \sum_{i=1}^n (X_i - \E X_1))]\\
+    &= \E \left[\exp(\sum_{i=1}^n \frac{t}{\sqrt{n}}(X_i - \E X_1))\right]\\
+    &= \E\left[\prod_{i=1}^n \exp\left(\frac{t}{\sqrt{n}}(X_i - \E X_1)\right)\right] \quad (\text{by iid})\\
+    &= \left(\E \left[\exp\left(\frac{t}{\sqrt{n}}(X_i - \E X_1)\right)\right]\right)^n\\
+    &= \left(\E\left[1 + \frac{t}{\sqrt{n}}(X_1- \E X_1) + \frac{t^2}{2n}(X_1 - \E X_1)^2 +\ \sum_{k=3}^\infty \frac{t^k}{k! n^{k/2}}(X_1 - \E X_1)^k\right]\right)^n\\
+    &= \left(1 + \underbrace{\frac{t^2}{2n}\Var X_1 + \sum_{k=3}^\infty \frac{t^k}{k! n^{k/2}}\E[(...)^k]}_{C_n}\right)^n \quad (\text{because } \E[X_1 - \E X_1] = 0)
+\end{align*}
+
+\textbf{Lemma:} Let $\{C_n\}_{n=1}^\infty$ be a sequence of real numbers. If $c_n \to 0$ and $n \cdot c_n \to \lambda$ when $n \to \infty$, then 
+\[\lim_{n \to \infty} (1 + C_n)^n = e^\lambda\]
+
+In this problem,
+\begin{itemize}
+    \item $c_n = 0$
+    \item $n\cdot c_n = \frac{t^2}{2} \Var X_1 + \sum_{k=3}^\infty \frac{t^k}{k!\, n^{\frac{k}{2} - 1}} \E[(...)^l]$
+\end{itemize}
+When $k \geq 3$, $\left(\frac{k}{2} - 1\right) > 0$ so 
+\[\lim_{n\to \infty} n \cdot C_n = \frac{t^2}{2}\Var X_1 = \lambda\]
+
+Then using the lemma, 
+\[M_{G_n}(t) = (1 + c_n)^n \overset{n \to \infty}{\longrightarrow} e^\lambda = \exp(\frac{t^2}{2}\Var X_1) = M_{G}(t)\]
+
+This completes the proof. 
+\pagebreak 
+\section*{\textbf{Statistics}}
+\section*{Lecture April 14: Statistical Models}
+\textbf{Definition:} Suppose we are interested in an experiment. Before performing the experiment we do not know the outcome.
+
+\textbf{Example:}
+
+Experiment: flip a coin n times 
+\[\Omega = \{\omega = (\omega^{(1), \, ..., \omega^{(n)}}) : \omega^{(i)} = \{H, T\}\} \]
+
+Here, $X_1, \, ..., X_n$ are functions on $\Omega$ 
+\[X_i = \begin{cases}
+    1 \quad \omega^{(i)} = H\\
+    0 \quad \omega^{(i)} = T
+\end{cases}\]
+
+Performing the experiment is equivalent to fixing an $\omega^* \in \Omega$. 
+
+For the fixed $\omega^*$, 
+\[x_i = X_i(\omega^*) \implies \{X_i\}_{i=1}^n \quad \text{which is the ``data''}\]
+
+\section*{Lecture April 14: Data, Models, and Inference}
+\textbf{Definition:} Suppose we are interested in an experiment - trying to observe outcomes. (e.g. flip an unfair coin n times)
+
+\subsection*{Part I - Data}
+Assume that before performing the experiment, we don't know the outcome so we consider $\Omega$, the set of all possible outcomes.
+
+Let $X_1, \, ..., X_n$ be known functions defined on $\Omega$. e.g.
+\[X_i(\omega) = \begin{cases}
+    1 \quad \omega^{(i)} = H\\
+    0 \quad \omega^{(i)} = T
+\end{cases}\]
+
+Performing the experiment is equivalent to picking and fixing $\omega^* \in \Omega$. 
+
+For that fixed $\omega^*$, we can define a collection $\{x_i\}_{i=1}^n$ of \emph{deterministic} numbers by 
+\[x_i = X_i(\omega^*) \quad i = 1, \, ..., n\]
+Thus, after the experiment, the value of $x_i$ is known and nothing is random. 
+
+The collection $\{x_i\}_{i=1}^n$ is called \emph{sample data} and the $n$ is referred to as the \emph{sample size}.
+
+\subsection*{Part II -Models}
+Let $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ be a family of real-valued functions satisfying the ``CDF properties''.
+
+The $\mathfrak{F}$-based model is an assumption:
+
+$\exists \theta^* \in \Theta$ and a probability $\P$ defined on $\Omega$ such that $X_1, X_2,\, ..., X_n \sim^{idd} F_{\theta^*} = \P(\{\omega \in \Omega: X_1(\omega) \leq x\})$
+
+If the assumption is incorrect, we say the model is \emph{misspecified}
+
+\textbf{Parametric:}
+\begin{enumerate}
+    \item If $\Theta$ is a subset of a finite-dimensional space, then the model is called a parametric model
+    \item If $\Theta$ is a subset of an infinite-dimensional space, then the model is called a nonparametric model
+\end{enumerate}
+
+\textbf{Examples of Parametric models:}
+\begin{itemize}
+    \item for $\Theta =\R$, $F_\theta = F_{\theta^* \sim N(\theta, 1)}$\\
+    \item $\Theta = \R \times (0, +\infty)$, $\theta = (\mu, \sigma)$, $F_\theta = F_{X \sim N(\mu, \sigma^2)}$
+\end{itemize}
+
+\textbf{Examples of nonparametric models:}
+$\Theta$ the class of functions on $(0,1)$ such that 
+\[\begin{cases}
+    \int_0^1 |f(x)|^2\; dx < +\infty\\
+    \int_0^1 |f'(x)|^2\; dx < +\infty\\
+    \int_0^1 |f''(x)|^2\; dx < +\infty
+\end{cases}\]
+which is used in machine learning for ``smoothing splines''
+
+\subsection*{Part III - Statistical Inference}
+Statistical inference is the process of combining probability theory and $\{x_i\}_{i=1}^n$ to infer the value of $\theta^*$
+
+\section*{Lecture April 17}
+\subsection*{Part I - Review of Statistical Models}
+Let $\P$ be \emph{the} underlying probability generating experimental outcomes. 
+
+Consider a family of CDFs $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ 
+
+A $\mathfrak{F}$-based model is an assumption that there exists a $\theta^* \in \Theta$ such that $X_1,\, ..., X_n \overset{iid}{\sim} F_{\theta^*}(x) = \P(X_1 \leq x)$
+
+e.g. ``We assume that flipping a coin (fair or unfair) will follow a Bernoulli distribution $F$ with success rate $p$. $\mathfrak{F}$ is all the Bernoulli distributions and $F_{\theta^*}$ is a specific one I guess it to be. If $F_{\theta^*} = F$ my model is correct. Otherwise, it is unspecified.''
+
+The process of using data $\{X_i\}_{i=1}^n = \{X_i(\omega^*)\}_{i=1}^n$ and probability theory to infer the underlying $\P$ (or $\theta^*$) is referred to as ``statistical inference.''
+
+\subsection*{Part II - statistics}
+\begin{center}
+    \begin{tabular}{|c|cc|}
+        \hline
+        & Probability theory & Statistics\\
+        \hline
+        Experiment & Happens before ($\omega$ unknown) & Happens after ($\omega^*$ is fixed)\\
+        & &\\
+        Underlying $\P$ & Is known & Is not known\\
+        \hline
+    \end{tabular}
+\end{center}
+
+Thus the goal of statistics is to infer $\P$ using data. 
+
+\subsection*{Part III - Statistical Inference}
+Branches of Statistical Inference:
+\begin{enumerate}
+    \item Hypothesis testing (HT)
+    \item Point estimation
+    \item Confidence intervals
+\end{enumerate}
+
+\subsection*{Part IV - Hypothesis Testing}
+Let $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ be the parameter space and assume that the $\mathfrak{F}$-based model is true (i.e. there exists a $\theta^* \in \Theta$ such that $F_{\theta^*}(x) = \P(X_1 \leq x)$) 
+
+Let $\Theta = \Theta_0 \cup \Theta_1$. Then we have two hypotheses as $\Theta_0$ and $\Theta_1$ partition $\Theta$. 
+Either:
+\begin{enumerate}
+    \item $H_0: \theta^* \in \Theta_0$ (which we call the null hypothesis)
+    \item $H_1:\theta^* \in \Theta_1$ (the alternative hypothesis)
+\end{enumerate}
+
+Only one of these can be true. 
+
+\textbf{Example:} 
+\begin{itemize}
+    \item $\Theta = \R$
+    \item $F_\theta = F_{N(\theta,1)}$
+    \item $\Theta_0 = \{0\}$
+    \item $\Theta_1 = \R - \{0\}$
+\end{itemize}
+So our two hypotheses are $H_0: \theta^* = 0$ vs. $H_1 : \theta^* \neq 0$
+
+\textbf{Definition:} Suppose the sample size is n (i.e. $\{X_i\}_{i=1}^n$ is the data). Any function $T$ mapping $\R^n \mapsto \{0, 1\}$ is called a \emph{test}. 
+
+\emph{Explanation:} IF $T(x_1, x_2, \, ..., x_n) = 1$, we reject $H_0$. If it is equal to 0, we accept $H_0$
+
+\textbf{Example:} $T(\xi_1, \xi_2, \, ... \xi_n) =1 \implies$ we always reject $H_0$ for all data. This is a test but not a good one. 
+
+\textbf{Example:} $\Theta = \R$ and $F_\theta = F_{N(\theta, 1)}$ so $H_0 : \theta^* = 0$ and $H_1 : \theta^* \neq 0$. By the law of large numbers, 
+\[\frac{x_1 + x_2 + ... + x_n}{n} \approx \theta^*\] 
+so we can make a test 
+\[T(x_1, ..., x_n) = \mathbf{1}\left\{|\frac{x_1 + x_2 + ... + x_n}{n}|\right\} > c\]
+
+\section*{Lecture April 19: Tests}
+\textbf{Question:} WHat are the criteria for choosing good tests?
+First, $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ and then we assume that $F_\theta(x)$ is piecewise differentiable (though this is not actually necessary in a more rigorous formulation.)
+\[p(x | \theta) = \frac{d}{dx}F_\theta(x)\]
+with $X_1, X_2, \, ..., X_n \overset{iid}{\sim} F_theta$ and
+\[\vec{X} = (X_1, X_2, \, ..., X_n)^T \sim F_{\vec{X}}(x_1, \, ..., x_n)\]
+By iid-ness, this implies that 
+\[F_{\vec{X}}(x_1, x_2, \, ..., x_n) = \prod_{i=1}^n F_{\theta^*}(x_i)\]
+which means that the PDF of $\vec{X}$ is 
+\[\prod_{i=1}^n p(x_i | \theta^*)\]
+
+For a test 
+\[T(X_1(\omega), X_2(\omega), \, ..., X_n(\omega)) \sim \text{Bernoulli}(\lambda)\]
+\[\lambda = \E[T(\vec{X})] = \int_{\R^n} T(\xi_1, \, ..., \xi_n) \; \cdot \prod_{i=1}^n p(\xi_i | \theta^*) \; d\xi_1\, ... d\xi_n = \P(T = 1)\]
+where $\P(T = 1)$ is ``the expected rejection rate of the null hypothesis''
+
+\textbf{Note:} this equation depends on $\theta^*$ but this is not actually known so the expected value can't actually be calculated as such. 
+
+So we must consider all $\theta \in \Theta$ so 
+\[ \beta_T(\theta) = \int_{\R^n}T(\xi_1\, ...,\xi_n) \cdot \prod_{i=1}^n p(\xi_i | \theta) \; d\xi_1\, ... d\xi_n\] 
+so 
+\[\beta_T(\theta^*) = \E[T(\vec{X})]\]
+
+
+T makes decisions which may be correct or incorrect. Hence there may be error:
+\textbf{Definitions:} Error
+\begin{enumerate}
+    \item \emph{Type I Error:} the null hypothesis is true ($\theta^* \in \Theta_0$) but we reject it ($T = 1$)
+    \item \emph{Type II Error:} the null hypothesis is false ($\theta^* \in \Theta_1$) but we fail to reject it ($T = 0$)
+\end{enumerate}
+
+\textbf{Scenario 1:} If $\theta^* \in \Theta_0$, 
+\[\P(\text{Type 1 error}) = \P(T= 1) = \E[T(\vec{X})] = \beta_T(\theta^*)\]
+so $\beta_T(\theta^*)$ must be small but we cannot minimize it as normal without knowing $\theta^*$. BUT 
+\[\sup_{\theta \in \Theta_0} \beta_T(\theta)\]
+has to be small. 
+
+This gives the first condition of a good test: type 1 error is small or 
+\[\boxed{\sup_{\theta \in \Theta_0} \beta_T(\theta) \text{  must be small}}\]
+where
+\[ \beta_T(\theta) = \int_{\R^n}T(\xi_1\, ...,\xi_n) \cdot \prod_{i=1}^n p(\xi_i | \theta) \; d\xi_1\, ... d\xi_n\] 
+
+\textbf{Scenario 2:} If $\theta^* \notin \Theta_0$ 
+\[\P(\text{type II error}) = \P(T = 0) = 1 - \P(T = 1) = 1 - \beta_T(\theta^*)\]
+so $\beta_T(\theta^*)$ has to be large or
+\[\boxed{\beta_T(\theta) \text{  has to be large for all  } \theta \in \Theta_1}\]
+
+\section*{Lecture April 21}
+\subsection*{Part I - Review}
+For a test $T(\vec{X})$ of an $\mathfrak{F}$-based model, 
+\[T(X_1(\omega), \,..., X_n(\omega)) = R(\omega) \in \{0, 1\}\implies R \sim \text{Bernoulli}(r)\]
+where $r = \P(R=1) = \E R$.
+Then 
+\[\beta_T(\theta) = \underbrace{\int_{-\infty}^{\infty} ... \int_{-\infty}^{\infty} }_{n} T(\xi_1,\, ..., \xi_n) \cdot \prod_{i=1}^n p(\xi_i | \theta) \; d\xi_1\, ... d\xi_n\] 
+where $p(\xi_i | \theta) = F'_\theta (\xi_i)$.
+Which means that $\beta_T(\theta^*) = \E R$. 
+
+This function can be interpreted ``if $F_\theta$ is the true CDF, the probability of rejecting $H_0$ through $T$ is $\beta_T(\theta)$.
+
+This function gives two criteria for a good test relative to other tests:
+\begin{enumerate}
+    \item To make the probability of a type 1 error (the null hypothesis is correct but we reject it) small, we want $\sup_{\theta \in \Theta} \beta_T(\theta)$ (``the significance of T'') to be small. 
+    \item To make the probability of a type 2 error (null hypothesis is false but we fail to reject it) we want $\beta_T(\theta)$ to be large for every $\theta \in \Theta_1$
+\end{enumerate}
+
+\subsection*{Part II - Uniformly Most Powerful Test (UMP Test)}
+\textbf{Definition:} Let $\alpha \in (0, 1)$ be pre-specified. Suppose $T^*$ is a test with significance $\alpha$. (That is, $\sup_{\theta \in \Theta_0} \beta_T^*(\theta) = \alpha$). Then the $T^*$ is said to be a UMP test with significance $\alpha$ if:
+\[\forall T : \sup_{\theta \in \Theta_0} \beta_T(\theta) = \alpha\]
+we have 
+\[\beta_T(\theta) \leq \beta_{T^*}(\theta) \quad \forall \theta \in \Theta_1\]
+
+\textbf{Neyman-Pearson Lemma (1930s):}
+With $\Theta = \{\theta_0, \theta_1\}$, $\Theta_0 = \{\theta_0\}$, $\Theta_1 = \{\theta_1\}$. Let $p(\xi | \theta) = F'_\theta(\xi)$ for all $\theta \in \Theta$. For any $\alpha \in (0, 1)$, \emph{the} UMP test with significance alpha is 
+\[T_\alpha (\xi_1, \, ..., \xi_n) = \mathbf{1}\left(\frac{\prod_{i=1}^n p(\xi_i|\theta_1)}{\prod_{i=1}^n p(\xi | \theta_0)} > C_\alpha\right)\]
+where $C_\alpha$ is the solution to 
+\[\beta_{T_{NP, \alpha}}(\theta_0) = \alpha\]
+
+\textbf{Proof: Omitted}
+
+\textbf{Example:}
+
+$\Theta = \{\theta_0, \theta_1\}$, $\Theta_0 = \{\theta_0\}$, $\Theta_1 = \{\theta_1\}$. $F_\theta$ is the CDF of $N(\theta,1)$. So 
+\[p(\xi_i | \theta) = \frac{1}{\sqrt{2\pi}}\exp(-\frac{(\xi_i - \theta)^2}{2})\]
+\[\prod_{i=1}^n p(\xi_i|0) = (2\pi^{-n/2}) \exp(-\frac{1}{2}\sum_{i=1}^n \xi_i^2)\]
+\begin{align*}
+    \prod_{i=1}^n p(\xi_i|1) &= (2\pi^{-n/2}) \exp(-\frac{1}{2}\sum_{i=1}^n(\xi_i - 1)^2)\\
+    &= (2\pi^{-n/2}) \exp(-\frac{1}{2}\sum_{i=1}^n(\xi_i)^2)\cdot \exp\left(\sum_{i=1}^n \xi_i\right) \cdot \exp(-\frac{n}{2})\\
+\end{align*}
+So 
+\[T_{NP, \alpha}(\xi_1, \, ..., \xi_n) = \mathbf{1}\left(\exp(-\frac{n}{2}) \cdot \exp(n \cdot \bar{\xi}_n > C_\alpha)\right) = \mathbf{1}\left(\bar{\xi}_n > \frac{\log C_\alpha}{n} + \frac{1}{2}\right)\]
+We have data $\{x_i\}_{i=1}^n$
+
+\textbf{Interpretation:}
+We reject $H_0 : \theta^* = 0$ if $\bar{X}_n > \frac{1}{2} + \frac{\log C_a}{n}$
+
+We fail to reject $H_0$ if $\bar{X}_n \leq \frac{1}{2} + \frac{\log C_a}{n}$
+
+
+\section*{Lecture April 24: The Maximum Likelihood Estimator (MLE)}
+\subsection*{Part I - Framework}
+Let $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ be a family of CDFs indexed by $\theta$ with $\P$ as the underlying probability. We then assume that the $\mathfrak{F}$-based model is correct, i.e.,
+\[\exists \theta^* \in \Theta: X_1, \, ..., X_n \overset{iid}{\sim} F_{\theta^*}(x) = \P(X_1 \leq x)\]
+
+The process of estimating $\theta^*$ is referred to as ``point estimating'' in statistics. 
+
+\textbf{Point Estimating:}
+\begin{enumerate}
+    \item MLE
+    \item The method of moments
+    \item Mean squared estimation (MSE)/Least squares Estimator
+\end{enumerate}
+
+\textbf{Note:} Only MLE is covered in APMA 1655. 
+
+\subsection*{Part II - Motivation from the Neyman-Pearson View}
+\begin{itemize}
+    \item $\Theta = \{\theta_0, \theta_1\}$
+    \item $\Theta_0 = \{\theta_0\}$
+    \item $\Theta_1 = \{\theta_1\}$
+    \item $H_0: \theta^* = \theta_0$
+    \item $H_1: \theta^* = \theta_1$
+    \item $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$
+    \item $p(\xi | \theta) = F_\theta'(\xi)$
+    \item Data $\{x_i\}_{i=1}^n$ is given and fixed.
+\end{itemize}
+
+The Neyman-Pearson Test (the Uniformly Most-Powerful test) is 
+\[T(x_1\, ..., x_n) = \mathbf{1}\left(\frac{\prod_{i=1}^n p(x_i | \theta_1)}{\prod_{i=1}^n p(x_i | \theta_0)} > c_a\right)\]
+That is, if $T(\vec{x}) - 2$ we reject the null hypothesis. Otherwise, we accept the null hypothesis. 
+
+From that inequality, when the numerator tends to be large, we tend to believe that $\theta^* = \theta_1$ and vice versa. In other words, we believe that the true parameter $\theta^*$ is 
+\[\underset{\theta \in \{\theta_0\, , \theta_1\}}{\text{argmax}}\left(\prod_{i=1}^n p(x_i | \theta)\right)\]
+
+\subsection*{Part III - Definition of MLE}
+\textbf{Definition:} Let $\Theta$ be a subset of a finite dimensional space. Let $\mathfrak{F} = \{F_\theta\}_{\theta \in \Theta}$ be a family of CDFs and $p(\xi | \theta) = F_\theta' (\xi)$. Suppose we have data $\mathfrak{D} = \{x_i\}_{i=1}^n$
+Then 
+\[L(\theta | \; \mathfrak{D}) = \prod_{i=1}^n p(x_i | \theta)\]
+is the likelihood function. And then the maximum likelihood estimator is 
+\[\hat{\theta}_{MLE} = \underset{\theta \in \Theta}{\text{argmax}}\; L(\theta | \; \mathfrak{D})\]
+
+\subsection*{Part IV - Calculating MLE}
+The ``log-likelihood'' is 
+\[\log  L(\theta | \; \mathfrak{D}) = l(\theta | \mathfrak{D}) = \sum_{i=1}^n \log p(x_i | \theta)\]
+So because log is strictly increasing, 
+\[\underset{\theta \in \Theta}{\text{argmax}}\; L(\theta | \; \mathfrak{D}) =  \underset{\theta \in \Theta}{\text{argmax}}\; l(\theta | \; \mathfrak{D})\]
+Thus 
+\[\boxed{\frac{\partial}{\partial \theta}l(\theta | \mathfrak{D}) = \sum_{i=1}^n \frac{\partial}{\partial \theta}\log[p(x_i | \theta)] = 0}\]
+
+\textbf{Example:} Say $\hat \theta$ is the solution to the above equation. If $\frac{\partial^2}{\partial \theta^2}l(\theta | \mathfrak{D}) \big|_{\theta = \hat{\theta}} < 0$. Then 
+\[\hat{\theta} = \hat{\theta}_{MLE} =  \underset{\theta \in \Theta}{\text{argmax}}\; l(\theta | \; \mathfrak{D})\]
+
+\textbf{Example:} (will be on final!)
+\begin{itemize}
+    \item $\Theta = \R$
+    \item $F_\theta$ is the CDF of $N(0, 1)$ so $p(\xi | \theta) = \frac{1}{\sqrt{2\pi}} \exp(-\frac{(\xi - \theta)^2}{2})$
+    \item $\mathfrak{D} = \{x_i\}_{i=1}^n$
+\end{itemize}
+
+Then 
+\begin{align*}
+    l(\theta | \mathfrak{D}) &= \log \left[\prod_{i=1}^n p(x_i | \theta)\right]\\
+    &= \sum_{i=1}^n \log[p(x_i | \theta)]\\
+    &= \sum_{i=1}^n \left[-\frac{1}{2}\log(2\pi) -frac{(x_i - \theta)^2}{2}\right]\\
+    \frac{\partial}{\partial \theta} l(\theta | \; \mathfrak{D}) &= \sum_{i=1}^n (x_i - \theta)\\
+    &= \left(\sum_{i=1}^n \right) - n \cdot \theta = 0\\
+    &\implies \hat{\theta} = \frac{1}{n}\sum_{i=1}^n x_i = \bar{x}_n\\
+    \frac{\partial^2}{\partial \theta^2} l(\theta | \mathfrak{D}) = -n < 0
+\end{align*}
+Therefore 
+\[\boxed{\hat{\theta}_{MLE} = \bar{x}_n}\]
+
+\section*{Lecture April 26:}
+\subsection*{Part I - MLE}
+Suppose the $\{F_\theta\}_{\theta \in \Theta}$-based model is correct. Thus the goal of the MLE is to estimate the ``true parameter'' $\theta^*$ for which $X_1, \, ..., X_n \overset{iid}{\sim} F_{\theta^*}(x) = \P(X_1 \leq x)$
+
+We assume that $F_\theta$ is (piecewise differentiable). We have a collection of given, fixed, deterministic data $D = \{x_i\}_{i=1}^n$. 
+
+We define a ``likelihood function''
+\[L(\theta | D) = \prod_{i=1}^n p(x_i | \theta)\]
+For different data, this function changes value so we select the theta which maximizes the function:
+\[\hat{\theta}_{MLE} = \underset{\theta \in \Theta}{\arg \max} L(\theta | D)\]
+
+\textbf{Note:} $-L(\theta | D)$ is usually referred to as a loss function 
+\[\underset{\theta \in \Theta}{\arg \max} L(\theta | D) = \underset{\theta \in \Theta}{\arg \min} (-L(\theta | D))\]
+
+In most real-world applications, the argmax is very difficult to calculate. Two primary methods to approximate it are Gradient Descent and the Expectation-Maximization Algorithm.
+
+We also define the ``log-likelihood'':
+\[l(\theta | D) = \log L(\theta | D) = \sum_{i=1}^n \log p(x_i | \theta)\]
+
+Then because log is strictly increasing, 
+\[\underset{\theta \in \Theta}{\arg \max} L(\theta | D) = \underset{\theta \in \Theta}{\arg \max} l(\theta | D)\]
+
+\subsection*{Part II - An Example}
+\textbf{Application:} $\Theta = \R$ and 
+\[p(\xi | \theta) = \frac{1}{\sqrt{2\pi}} \exp(- \frac{(\xi - \theta)^2}{2})\]
+
+\begin{align*}
+    l(\theta | D) &= \sum_{i=1}^n log p(x_i | \theta)\\
+    &= \sum_{i=1}^n \log\left(\frac{1}{\sqrt{2\pi}} \exp(- \frac{(x_i - \theta)^2}{2})\right)\\
+    &= \sum_{i=1}^n \left(-\frac{1}{2}\log(2\pi) - \frac{1}{2}(x_i - \theta)^2\right)\\
+    &= -\frac{n}{2}\log(2\pi) - \sum_{i=1}\frac{1}{2}(x_i - \theta)^2
+\end{align*}
+
+From calculus, we know the maximum will come at the critical point: 
+\begin{align*}
+    \frac{\partial}{\partial \theta} l(\theta | D) &= \frac{\partial}{\partial \theta} \left(\sum_{i=1}^n -\frac{1}{2}(x_i - \theta)^2\right)\\
+    &= \sum_{i=1}^n (x_i - \theta)\\
+    &= -n \cdot \theta + \sum_{i=1}^n x_i
+\end{align*}
+Thus 
+\[\hat \theta =  \frac{\partial}{\partial \theta} l(\theta | D) = 0 \longrightarrow \hat \theta = \frac{1}{n}\sum_{i=1}^n x_i = \bar{x}_n\]
+
+Then from the second derivative, 
+\[\frac{\partial^2}{\partial \theta^2} l(\theta | D) = -n < 0\]
+so this is in fact the maximum!
+
+Thus,
+\[\hat \theta = \bar{x}_n = \hat \theta_{MLE}\]
+
+As we will see, $\hat \theta_{MLE} \approx \theta^*$ and we have found our function!
+
+In this example, our model is $\{N(\theta, 1)\}_{\theta \in \R}$ (the collection of normal distributions). We want the calculated MLE ($\hat \theta_{MLE}$) to be close to the true parameter $\theta^*$. 
+
+Before the experiment we only have potential data $\{X_i\}_{i=1}^n$. So before the experiment the MLE is 
+\[\bar X_n(\omega) = \frac{1}{n} \sum_{i=1}^n X_i(\omega)\]
+
+The Law of Large Numbers implies that 
+\[\hat \theta_{MLE} = \bar{X}_n(\omega) \approx \E X_1 = \theta^*\]
+\textbf{Note:} the last equal sign is only true if the model is correct. 
+
+But the Central Limit Theorem implies that $\sqrt{n} (\bar{X}_n - \theta^*) \dot \sim N(0, 1)$
+
+\textbf{Note:} these results only hold for this specific example! Other models and problem will have different implications but the results of the CLT and LLN are true for all MLE. 
+
+\subsection*{Part III - The Final Theorem}
+\textbf{Theorem:} 
+Suppose on $(\P, \Omega)$ the $\{F_\theta\}_{\theta \in \Theta}$-based model is correct. 
+
+After the experiment, 
+\[\hat \theta_{MLE}(\vec{x}) = \underset{\theta \in \Theta}{\arg \max} L(\theta |\; \vec{x}) \]
+
+But before the experiment 
+\[\hat \theta_{MLE}(X_1(\omega), \,..., X_n(\omega)) \overset{def}{=} \hat \theta_n(\omega)\]
+
+Under some ``regularity conditions'' (omitted), 
+\begin{itemize}
+    \item (Consistency)  
+    \[\forall \varepsilon > 0, \qquad \lim_{n\to \infty}\P(\{\omega \in \Omega: |\hat \theta(\omega) - \theta^*| < \varepsilon\}) = 1\]
+
+    \item (Aymptotic Normality)
+    \[\sqrt{n}(\hat \theta_n - \theta^*) \dot \sim N(0, \frac{1}{I(\theta^*)})\]
+    where the ``Fisher Information'' $I(\theta)$ is 
+    \[I(\theta) = \int_{-\infty}^{\infty} \left(\frac{\partial}{\partial \theta}\log p(\xi | \theta)\right)^2 \cdot p(\xi |\; \theta)\; d\xi\]
+\end{itemize}
+
+\textbf{Proof:} don't be silly. look at the topology of the parameter space
+
+\section*{Lecture May 1: Confidence Sets (Optional)}
+\subsection*{Part I - Setup} 
+Let $\P$ be the underlying probability generating experimental outcomes. We select a specific family of CDFs $\{F_{\theta}\}_{\theta \in \Theta}$ and assume 
+\[\exists \theta^* \in \Theta: X_1, X_2,\, ..., X_n \overset{iid}{\sim} F_{\theta^*}(x) = \P(X_1 \leq x)\] 
+
+The goal of confidence sets is to find subsets of $\Theta$ that cover the true parameter $\theta^*$ with a high probability. 
+
+\subsection*{Part II - Definition}
+Suppose $C_n$ is a set-value function $C_n : \R^n \to \{\text{subsets of } \Theta\}$. Let $\alpha \in (0, 1)$ be pre-specified. Then $C_n$ is a \emph{confidence set} with confidence $1 - \alpha$ if 
+\[\P(\{\omega \in \Omega: \theta^* \in C_n(X_1(\omega), \, ..., X_n(\omega))\}) = 1 - \alpha\]
+
+If the values of $C_n$ are intervals the corresponding confidence sets are referred to as \emph{confidence intervals}. Note that this implies the dimensionality of $\Theta$ is 1. 
+
+\textbf{Lemma:} Let $X_1, X_2, \, ..., X_n \overset{iid}{\sim} N(\mu, \sigma^2)$. Then 
+\begin{enumerate}
+    \item $\bar{X}_n \sim N(\mu, \frac{\sigma^2}{n})$
+    \item $\sqrt{n} \frac{\bar{X}_n - \mu}{\sigma} \sim N(0, 1)$
+\end{enumerate}
+
+\subsection*{Part III - Examples}
+\textbf{Example 1:} $\Theta = \R$ 
+\begin{itemize}
+    \item $F_\theta$ is the CDF of $N(\theta, \sigma^2)$ with $\sigma$ known.
+    \item $exists \theta^* \in \Theta$ such that $X_1, \, ..., X_n \overset{iid}{\sim} N(\theta^*, \sigma^2)$
+\end{itemize}
+We define 
+\[C_n(\xi_1, \,..., \xi_n) = \left(\bar \xi_n - \xi_{1 - \frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt{n}}, \; \bar{\xi}_n + \xi_{1 - \frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt{n}}\right)\]
+Where $\xi_{1 - \frac{\alpha}{2}}$ is the ``$(1- \frac{\alpha}{2})$-quantile'' ($\Phi(\xi_{1 - \frac{\alpha}{2}})) = 1 - \frac{\alpha}{2}$. Then 
+\begin{align*}
+    \P\left(\{\omega \in \Omega: \theta^* \in C(X_1(\omega),\, ..., X_n(\omega))\}\right) &= \P\left(\bar{X}_n(\omega) - \xi_{1 - \frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt{n}} < \theta^* < \bar{X}_n(\omega) + \xi_{1 - \frac{\alpha}{2}} \cdot \frac{\sigma}{\sqrt{n}}\right)\\
+    &= \P\left(-\xi_{1 - \frac{\alpha}{2}} < \sqrt{n} \cdot \frac{\bar X_n(\omega) - \theta^*}{\sigma} < \xi_{1 - \frac{\alpha}{2}}\right)\\
+    &= \Phi(\xi_{1 - \frac{\alpha}{2}}) - \Phi(-\xi_{1 - \frac{\alpha}{2}})\\
+    &= 1 - \frac{\alpha}{2} - \frac{\alpha}{2} = \boxed{1 - \alpha}
+\end{align*}
+Thus, $C_n$ is a confidence interval with confidence $1 - \alpha$. 
+
+\textbf{Example 2:} This definition of $C_n$ holds independent of normality! That is, if the random variables conform iid to \emph{some} distribution with known mean $\theta$ and variance $\sigma^2$, we can take the above derivation to get  
+\begin{align*}
+    \lim_{n \to \infty} \P\left(\{\omega \in \Omega: \theta^* \in C(X_1(\omega),\, ..., X_n(\omega))\}\right) &= \lim_{n \to \infty} \P\left(-\xi_{1 - \frac{\alpha}{2}} < \sqrt{n} \cdot \frac{\bar X_n(\omega) - \theta^*}{\sigma} < \xi_{1 - \frac{\alpha}{2}}\right)\\
+    &\overset{CLT}{=} \Phi(\xi_{1 - \frac{\alpha}{2}}) - \Phi(-\xi_{1 - \frac{\alpha}{2}})\\
+    &= 1 - \frac{\alpha}{2} - \frac{\alpha}{2} = \boxed{1 - \alpha}
+\end{align*}
+So $C_n$ is here a confidence interval with \emph{asymptotic} confidence $1- \alpha$
 \end{document}
+
+
+
 
